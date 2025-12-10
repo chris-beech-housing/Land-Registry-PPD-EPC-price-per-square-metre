@@ -56,7 +56,7 @@ An overview of the scripts:
 		iv) Tidying up of the variable names; keeping the existing variable names allows
 		for troubleshooting with comparison to the original code
 
-4. Create final PPD. This script uses data.table indexing to split the matches into 1:1 or 1:N transaction to EPC groups, has a new function to determine which of the N to choose, then recombines and filters for data quality. Alternate rules and filters can easily be substituted. This is equivalent to the Data_cleaning.R script in Bin's work.
+4. Create final PPD. This script: uses data.table indexing to split the matches into 1:1 or 1:N transaction to EPC groups, has a new function to determine which of the N to choose, then recombines and filters for data quality. Alternate rules and filters can easily be substituted. This is equivalent to the Data_cleaning.R script in Bin's work.
 
 There is no equivalent to Bin's Evaluation.R and Read_NSPL.sql scripts but these are trivial to replicate for those that require it.
 
