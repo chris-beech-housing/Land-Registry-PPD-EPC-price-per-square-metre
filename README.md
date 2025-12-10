@@ -1,5 +1,5 @@
 # Land-Registry-PPD-EPC-price-per-square-metre
-This is a refactor of Bin Chi's excellent work (https://github.com/Bin-Chi/Link-LR-PPD-and-Domestic-EPCs) linking the England and Wales Land Registry Price Paid Data (https://www.gov.uk/guidance/about-the-price-paid-data) to EPC data (https://epc.opendatacommunities.org/) to obtain a price per square metre dataset.
+This is a refactor of [Bin Chi's excellent work](https://github.com/Bin-Chi/Link-LR-PPD-and-Domestic-EPCs) linking [England and Wales Land Registry Price Paid Data](https://www.gov.uk/guidance/about-the-price-paid-data) to [EPC data](https://epc.opendatacommunities.org/) to obtain a price per square metre dataset.
 
 Overall execution time for the equivalent of scripts 3 and 4 has improved from over 18 hours to just under 65 minutes, or 18x, on an M1 MacBook Pro with 32GB of memory. I hope by speeding up this code more people can and will use Bin's approach; the rules have an excellent match rate - see the Matches by year csv file.
 
@@ -60,6 +60,6 @@ An overview of the scripts:
 
 There is no equivalent to Bin's Evaluation.R and Read_NSPL.sql scripts but these are trivial to replicate for those that require it.
 
-air.toml The code has been formatted with air: https://www.tidyverse.org/blog/2025/02/air/ with a custom line width of 105 characters to ensure the row wise operations fit on one line for ease of scanning by eye.
+air.toml The code has been [formatted with air](https://www.tidyverse.org/blog/2025/02/air/) with a custom line width of 105 characters to ensure the row wise operations fit on one line for ease of scanning by eye.
 
 All Data should be put in the Data folder along with Bin's rulechi.csv which is used to correct addresses as necessary. I have not tried to add to these rules, although it may be possible to do so.
