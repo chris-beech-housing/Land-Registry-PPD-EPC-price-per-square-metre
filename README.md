@@ -7,7 +7,7 @@ Overall execution time for the equivalent of scripts 3 and 4 has improved from o
 
 An overview of the scripts:
 
-1. Combine EPC certificates. This script selects only the required fields from the individual EPC files before combining into a single file. This doesn't have an equivalent in Bin's work.
+1. Combine EPC certificates. This script selects only the required fields from the individual EPC files before combining into a single file. This doesn't have an equivalent in Bin's work. This is for the [new EPC site](https://get-energy-performance-data.communities.gov.uk/) which only has EPC certificates from 2012 onwards. I need to create a new workflow that combines Bin's data from before 2012 with this data.
 
 2. Add PPD and EPC to database. This script adds the PPD and EPC datasets to the duckDB database, only taking records with postcodes in common to both. This is equivalent to the Data_cleaning.sql and Read_LR_PPD.sql scripts in Bin's work but adds a few more lines to tidy up the data upfront. Note that I have kept the additional price paid category of transactions.
 
