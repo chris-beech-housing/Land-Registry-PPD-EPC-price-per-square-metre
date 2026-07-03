@@ -4,37 +4,32 @@ library(tidyverse)
 options(scipen = 100)
 
 ## Read all EPC certificates.csv files and re-write with only the desired columns
-# https://epc.opendatacommunities.org/
+# https://get-energy-performance-data.communities.gov.uk/
 
-# Function to process each certificates.csv file
+# Function to process each certificates-YYYY.csv file
 process_certificates_file <- function(file_path) {
   tryCatch(
     {
-      # Define the new file path as certificates_ucl.csv in the same folder
+      # Extract the suffix (e.g., "-2012") from the filename
+      file_name <- basename(file_path)
+      suffix <- str_extract(file_name, "-[^.]+")
       folder_path <- dirname(file_path)
-      new_file_path <- file.path(folder_path, "certificates_ucl.csv")
+      new_file_path <- file.path(folder_path, paste0("certificates_ucl", suffix, ".csv"))
 
       read_csv(file_path, show_col_types = FALSE) |>
         select(
-          ADDRESS1,
-          ADDRESS2,
-          ADDRESS3,
-          ADDRESS,
-          POSTCODE,
-          PROPERTY_TYPE,
-          INSPECTION_DATE,
-          LODGEMENT_DATE,
-          TOTAL_FLOOR_AREA,
-          NUMBER_HABITABLE_ROOMS
+          address1,
+          address2,
+          address3,
+          address,
+          postcode,
+          property_type,
+          inspection_date,
+          lodgement_date,
+          total_floor_area,
+          number_habitable_rooms
         ) |>
         write_csv(new_file_path)
-
-      # Remove recommendations.csv in the same folder
-      folder_path <- dirname(file_path)
-      recommendations_path <- file.path(folder_path, "recommendations.csv")
-      if (file.exists(recommendations_path)) {
-        file.remove(recommendations_path)
-      }
     },
     error = function(e) {
       message("Error processing file: ", file_path, "\n", e)
@@ -42,12 +37,12 @@ process_certificates_file <- function(file_path) {
   )
 }
 
-# Main function to recursively find and process certificates.csv files
+# Main function to find and process certificates-YYYY.csv files
 process_certificates_folder <- function(folder_path) {
   list.files(
     path = folder_path,
-    pattern = "\\certificates.csv$",
-    recursive = TRUE,
+    pattern = "^certificates-.*\\.csv$",
+    recursive = FALSE,
     full.names = TRUE
   ) |>
     walk(process_certificates_file)
@@ -55,7 +50,7 @@ process_certificates_folder <- function(folder_path) {
 
 # Run the function
 process_certificates_folder(
-  "Data/all-domestic-certificates"
+  "Data/domestic-csv"
 )
 
 # Function to read each certificates.csv file
@@ -69,24 +64,24 @@ read_certificates <- function(file_path) {
   )
 }
 
-# Combine all certificates_ucl.csv files from subfolders
+# Combine all certificates_ucl-YYYY.csv files
 combine_certificates_from_subfolders <- function(folder_path, output_file) {
   list.files(
     path = folder_path,
-    pattern = "\\certificates_ucl.csv$",
-    recursive = TRUE,
+    pattern = "^certificates_ucl-.*\\.csv$",
+    recursive = FALSE,
     full.names = TRUE
   ) |>
     map(read_certificates) |>
     compact() |>
     bind_rows() |>
     distinct() |>
-    arrange(LODGEMENT_DATE, TOTAL_FLOOR_AREA) |>
+    arrange(lodgement_date, total_floor_area) |>
     mutate(
-      add1 = toupper(ADDRESS1),
-      add2 = toupper(ADDRESS2),
-      add3 = toupper(ADDRESS3),
-      add = toupper(ADDRESS),
+      add1 = toupper(address1),
+      add2 = toupper(address2),
+      add3 = toupper(address3),
+      add = toupper(address),
       id = row_number()
     ) |>
     select(
@@ -94,12 +89,12 @@ combine_certificates_from_subfolders <- function(folder_path, output_file) {
       add2,
       add3,
       add,
-      postcode = POSTCODE,
-      propertytype = PROPERTY_TYPE,
-      inspectiondate = INSPECTION_DATE,
-      lodgementdate = LODGEMENT_DATE,
-      tfarea = TOTAL_FLOOR_AREA,
-      numberrooms = NUMBER_HABITABLE_ROOMS,
+      postcode = postcode,
+      propertytype = property_type,
+      inspectiondate = inspection_date,
+      lodgementdate = lodgement_date,
+      tfarea = total_floor_area,
+      numberrooms = number_habitable_rooms,
       id
     ) |>
     write_csv(output_file)
@@ -107,6 +102,6 @@ combine_certificates_from_subfolders <- function(folder_path, output_file) {
 
 # Run the function
 combine_certificates_from_subfolders(
-  folder_path = "Data/all-domestic-certificates",
+  folder_path = "Data/domestic-csv",
   output_file = "Data/combined_certificates_ucl.csv"
 )
