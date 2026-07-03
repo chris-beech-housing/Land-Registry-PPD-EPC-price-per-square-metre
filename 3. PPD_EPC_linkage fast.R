@@ -50,7 +50,9 @@ beg2char <- function(text, char, include = FALSE, fixed = TRUE) {
   }
 
   # Adjust position if not including the match
-  if (!include) pos <- pos - nchar(char)
+  if (!include) {
+    pos <- pos - nchar(char)
+  }
 
   # Handle NA positions gracefully
   pos[is.na(pos)] <- stri_length(text[is.na(pos)])
@@ -68,7 +70,9 @@ char2end <- function(text, char, include = FALSE, fixed = TRUE) {
   }
 
   # Adjust position if not including the match
-  if (!include) pos <- pos + nchar(char)
+  if (!include) {
+    pos <- pos + nchar(char)
+  }
 
   # Handle NA positions gracefully
   pos[is.na(pos)] <- stri_length(text[is.na(pos)]) + 1
@@ -93,12 +97,19 @@ tran <-
   )
 
 # Read the Domestic EPCs from duckDB, we only need a subset of variables here
-epc <- dbGetQuery(con, "select add1, add2, add3, add, postcode, propertytype, id from epc")
+epc <- dbGetQuery(
+  con,
+  "select add1, add2, add3, add, postcode, propertytype, id from epc"
+)
 
 # ------------------stage 1------------------------------
 ###############matching rule 1 saonpaonstreet= ADDRE################
 tran$saonpaon <- stri_paste(tran$saon, tran$paon, sep = ", ")
-tran$saonpaonstreet <- stri_trim_both(stri_paste(tran$saonpaon, tran$street, sep = " "))
+tran$saonpaonstreet <- stri_trim_both(stri_paste(
+  tran$saonpaon,
+  tran$street,
+  sep = " "
+))
 tran$saonpaonstreet <- stri_replace_all_fixed(tran$saonpaonstreet, " ", "")
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
@@ -116,7 +127,11 @@ taba1 <-
 ###############matching rule 2 saonpaonstreet1= ADDRE################
 
 tran$saonpaon <- stri_paste(tran$saon, tran$paon, sep = ", ")
-tran$saonpaonstreet1 <- stri_trim_both(stri_paste(tran$saonpaon, tran$street, sep = ", "))
+tran$saonpaonstreet1 <- stri_trim_both(stri_paste(
+  tran$saonpaon,
+  tran$street,
+  sep = ", "
+))
 tran$saonpaonstreet1 <- stri_replace_all_fixed(tran$saonpaonstreet1, " ", "")
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
@@ -134,7 +149,11 @@ taba2 <-
 ###############matching rule 3  saonpaonstreet2= ADDRE ################
 
 tran$saonpaon1 <- stri_trim_both(stri_paste(tran$saon, tran$paon, sep = " "))
-tran$saonpaonstreet2 <- stri_trim_both(stri_paste(tran$saonpaon1, tran$street, sep = ", "))
+tran$saonpaonstreet2 <- stri_trim_both(stri_paste(
+  tran$saonpaon1,
+  tran$street,
+  sep = ", "
+))
 tran$saonpaonstreet2 <- stri_replace_all_fixed(tran$saonpaonstreet2, " ", "")
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
@@ -158,7 +177,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn <- stri_paste(tran$saonn, tran$paonn, sep = ", ")
-tran$saonpaonstreetn <- stri_trim_both(stri_paste(tran$saonpaonn, tran$streetn, sep = " "))
+tran$saonpaonstreetn <- stri_trim_both(stri_paste(
+  tran$saonpaonn,
+  tran$streetn,
+  sep = " "
+))
 tran$saonpaonstreetn <- stri_replace_all_fixed(tran$saonpaonstreetn, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
@@ -178,7 +201,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn <- stri_paste(tran$saonn, tran$paonn, sep = ", ")
-tran$saonpaonstreetn1 <- stri_trim_both(stri_paste(tran$saonpaonn, tran$streetn, sep = ", "))
+tran$saonpaonstreetn1 <- stri_trim_both(stri_paste(
+  tran$saonpaonn,
+  tran$streetn,
+  sep = ", "
+))
 tran$saonpaonstreetn1 <- stri_replace_all_fixed(tran$saonpaonstreetn1, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
@@ -198,7 +225,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn1 <- stri_trim_both(stri_paste(tran$saonn, tran$paonn, sep = " "))
-tran$saonpaonstreetn2 <- stri_trim_both(stri_paste(tran$saonpaonn1, tran$streetn, sep = ", "))
+tran$saonpaonstreetn2 <- stri_trim_both(stri_paste(
+  tran$saonpaonn1,
+  tran$streetn,
+  sep = ", "
+))
 tran$saonpaonstreetn2 <- stri_replace_all_fixed(tran$saonpaonstreetn2, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
@@ -284,7 +315,11 @@ taba9 <-
 tran <- anti_join_original_variables(tran, taba9)
 
 tran$saonpaon <- stri_paste(tran$saon, tran$paon, sep = ", ")
-tran$saonpaonstreet <- stri_trim_both(stri_paste(tran$saonpaon, tran$street, sep = " "))
+tran$saonpaonstreet <- stri_trim_both(stri_paste(
+  tran$saonpaon,
+  tran$street,
+  sep = " "
+))
 tran$saonpaonstreet <- stri_replace_all_fixed(tran$saonpaonstreet, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
@@ -304,7 +339,11 @@ taba10 <-
 tran <- anti_join_original_variables(tran, taba10)
 
 tran$saonpaon <- stri_paste(tran$saon, tran$paon, sep = ", ")
-tran$saonpaonstreet1 <- stri_trim_both(stri_paste(tran$saonpaon, tran$street, sep = ", "))
+tran$saonpaonstreet1 <- stri_trim_both(stri_paste(
+  tran$saonpaon,
+  tran$street,
+  sep = ", "
+))
 tran$saonpaonstreet1 <- stri_replace_all_fixed(tran$saonpaonstreet1, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
@@ -324,7 +363,11 @@ taba11 <-
 tran <- anti_join_original_variables(tran, taba11)
 
 tran$saonpaon1 <- stri_trim_both(stri_paste(tran$saon, tran$paon, sep = " "))
-tran$saonpaonstreet2 <- stri_trim_both(stri_paste(tran$saonpaon1, tran$street, sep = ", "))
+tran$saonpaonstreet2 <- stri_trim_both(stri_paste(
+  tran$saonpaon1,
+  tran$street,
+  sep = ", "
+))
 tran$saonpaonstreet2 <- stri_replace_all_fixed(tran$saonpaonstreet2, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
@@ -347,7 +390,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn <- stri_trim_both(stri_paste(tran$saonn, tran$paonn, sep = ","))
-tran$saonpaonstreetn <- stri_trim_both(stri_paste(tran$saonpaonn, tran$streetn, sep = " "))
+tran$saonpaonstreetn <- stri_trim_both(stri_paste(
+  tran$saonpaonn,
+  tran$streetn,
+  sep = " "
+))
 tran$saonpaonstreetn <- stri_replace_all_fixed(tran$saonpaonstreetn, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
@@ -370,7 +417,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn <- stri_paste(tran$saonn, tran$paonn, sep = ", ")
-tran$saonpaonstreetn1 <- stri_trim_both(stri_paste(tran$saonpaonn, tran$streetn, sep = ", "))
+tran$saonpaonstreetn1 <- stri_trim_both(stri_paste(
+  tran$saonpaonn,
+  tran$streetn,
+  sep = ", "
+))
 tran$saonpaonstreetn1 <- stri_replace_all_fixed(tran$saonpaonstreetn1, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
@@ -393,7 +444,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn1 <- stri_trim_both(stri_paste(tran$saonn, tran$paonn, sep = " "))
-tran$saonpaonstreetn2 <- stri_trim_both(stri_paste(tran$saonpaonn1, tran$streetn, sep = ", "))
+tran$saonpaonstreetn2 <- stri_trim_both(stri_paste(
+  tran$saonpaonn1,
+  tran$streetn,
+  sep = ", "
+))
 tran$saonpaonstreetn2 <- stri_replace_all_fixed(tran$saonpaonstreetn2, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
@@ -413,7 +468,11 @@ taba15 <-
 tran <- anti_join_original_variables(tran, taba15)
 
 tran$saonpaon1 <- stri_trim_both(stri_paste(tran$saon, tran$paon, sep = " "))
-tran$saonpaonstreet3 <- stri_trim_both(stri_paste(tran$saonpaon1, tran$street, sep = " "))
+tran$saonpaonstreet3 <- stri_trim_both(stri_paste(
+  tran$saonpaon1,
+  tran$street,
+  sep = " "
+))
 tran$saonpaonstreet3 <- stri_replace_all_fixed(tran$saonpaonstreet3, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
@@ -436,7 +495,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn1 <- stri_trim_both(stri_paste(tran$saonn, tran$paonn, sep = " "))
-tran$saonpaonstreetn3 <- stri_trim_both(stri_paste(tran$saonpaonn1, tran$streetn, sep = " "))
+tran$saonpaonstreetn3 <- stri_trim_both(stri_paste(
+  tran$saonpaonn1,
+  tran$streetn,
+  sep = " "
+))
 tran$saonpaonstreetn3 <- stri_replace_all_fixed(tran$saonpaonstreetn3, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
@@ -456,8 +519,16 @@ taba17 <-
 tran <- anti_join_original_variables(tran, taba17)
 
 tran$saonpaon <- stri_paste(tran$saon, tran$paon, sep = ", ")
-tran$saonpaonstreet1 <- stri_trim_both(stri_paste(tran$saonpaon, tran$street, sep = ", "))
-tran$saonpaonstreetlo <- stri_paste(tran$saonpaonstreet1, tran$locality, sep = ", ")
+tran$saonpaonstreet1 <- stri_trim_both(stri_paste(
+  tran$saonpaon,
+  tran$street,
+  sep = ", "
+))
+tran$saonpaonstreetlo <- stri_paste(
+  tran$saonpaonstreet1,
+  tran$locality,
+  sep = ", "
+)
 tran$saonpaonstreetlo <- stri_replace_all_fixed(tran$saonpaonstreetlo, " ", "")
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
@@ -479,10 +550,22 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn <- stri_paste(tran$saonn, tran$paonn, sep = ", ")
-tran$saonpaonstreetn1 <- stri_trim_both(stri_paste(tran$saonpaonn, tran$streetn, sep = ", "))
+tran$saonpaonstreetn1 <- stri_trim_both(stri_paste(
+  tran$saonpaonn,
+  tran$streetn,
+  sep = ", "
+))
 tran$localityn <- stri_replace_all_regex(tran$locality, "['.]", "")
-tran$saonpaonstreetnlo <- stri_paste(tran$saonpaonstreetn1, tran$localityn, sep = ", ")
-tran$saonpaonstreetnlo <- stri_replace_all_fixed(tran$saonpaonstreetnlo, " ", "")
+tran$saonpaonstreetnlo <- stri_paste(
+  tran$saonpaonstreetn1,
+  tran$localityn,
+  sep = ", "
+)
+tran$saonpaonstreetnlo <- stri_replace_all_fixed(
+  tran$saonpaonstreetnlo,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -500,8 +583,16 @@ taba19 <-
 tran <- anti_join_original_variables(tran, taba19)
 
 tran$saonpaon <- stri_paste(tran$saon, tran$paon, sep = ", ")
-tran$saonpaonstreet1 <- stri_trim_both(stri_paste(tran$saonpaon, tran$street, sep = ", "))
-tran$saonpaonstreetlo <- stri_paste(tran$saonpaonstreet1, tran$locality, sep = ", ")
+tran$saonpaonstreet1 <- stri_trim_both(stri_paste(
+  tran$saonpaon,
+  tran$street,
+  sep = ", "
+))
+tran$saonpaonstreetlo <- stri_paste(
+  tran$saonpaonstreet1,
+  tran$locality,
+  sep = ", "
+)
 tran$saonpaonstreetlo <- stri_replace_all_fixed(tran$saonpaonstreetlo, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
@@ -521,7 +612,11 @@ taba20 <-
 tran <- anti_join_original_variables(tran, taba20)
 
 tran$saonpaon1 <- stri_trim_both(stri_paste(tran$saon, tran$paon, sep = " "))
-tran$saonpaonstreet3 <- stri_trim_both(stri_paste(tran$saonpaon1, tran$street, sep = " "))
+tran$saonpaonstreet3 <- stri_trim_both(stri_paste(
+  tran$saonpaon1,
+  tran$street,
+  sep = " "
+))
 tran$saonpaonstreet3 <- stri_replace_all_fixed(tran$saonpaonstreet3, " ", "")
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
@@ -543,7 +638,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn1 <- stri_trim_both(stri_paste(tran$saonn, tran$paonn, sep = " "))
-tran$saonpaonstreetn3 <- stri_trim_both(stri_paste(tran$saonpaonn1, tran$streetn, sep = " "))
+tran$saonpaonstreetn3 <- stri_trim_both(stri_paste(
+  tran$saonpaonn1,
+  tran$streetn,
+  sep = " "
+))
 tran$saonpaonstreetn3 <- stri_replace_all_fixed(tran$saonpaonstreetn3, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
@@ -624,8 +723,16 @@ taba25 <-
 tran <- anti_join_original_variables(tran, taba25)
 
 tran$saonpaon1 <- stri_trim_both(stri_paste(tran$saon, tran$paon, sep = " "))
-tran$saonpaonstreet3 <- stri_trim_both(stri_paste(tran$saonpaon1, tran$street, sep = " "))
-tran$saonpaonstreet31 <- stri_replace_all_regex(tran$saonpaonstreet3, "[, ]", "")
+tran$saonpaonstreet3 <- stri_trim_both(stri_paste(
+  tran$saonpaon1,
+  tran$street,
+  sep = " "
+))
+tran$saonpaonstreet31 <- stri_replace_all_regex(
+  tran$saonpaonstreet3,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -647,8 +754,16 @@ tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 
 tran$saonpaonn1 <- stri_trim_both(stri_paste(tran$saonn, tran$paonn, sep = " "))
-tran$saonpaonstreetn3 <- stri_trim_both(stri_paste(tran$saonpaonn1, tran$streetn, sep = " "))
-tran$saonpaonstreetn31 <- stri_replace_all_regex(tran$saonpaonstreetn3, "[, ]", "")
+tran$saonpaonstreetn3 <- stri_trim_both(stri_paste(
+  tran$saonpaonn1,
+  tran$streetn,
+  sep = " "
+))
+tran$saonpaonstreetn31 <- stri_replace_all_regex(
+  tran$saonpaonstreetn3,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[,'./ ]", "")
 
@@ -670,16 +785,16 @@ tran <- anti_join_original_variables(tran, taba27)
 taba_list <- mget(ls(pattern = "^taba"))
 
 #casa1 is the linked result through stage1
-casa1 <- reduce(taba_list, union)
+casa1 <- bind_rows(taba_list) |> distinct()
 
 # save casa1 in duckDB and name as casabin1
-dbWriteTable(con, "casabin1", casa1, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "casabin1", casa1, overwrite = TRUE, row.names = FALSE)
 
 # Remove all the matching results
 rm(list = ls(pattern = "^taba"))
 
 # Save the unnmatched tran in duckDB as tranbin1
-dbWriteTable(con, "tranbin1", tran, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "tranbin1", tran, overwrite = TRUE, row.names = FALSE)
 
 # -------------------stage 2------------------------------
 ###############prepare for stage 2###################
@@ -691,7 +806,7 @@ tran2 <- tran[tran$saon == "", ]
 tran3 <- tran[tran$saon != "", ]
 
 # Save tran2 and tran3 in duckDB
-dbWriteTable(con, "tranbin2", tran2, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "tranbin2", tran2, overwrite = TRUE, row.names = FALSE)
 dbWriteTable(con, "tranbin3", tran3, overwrite = TRUE, row.names = FALSE)
 
 # Tidy up
@@ -724,7 +839,11 @@ tran2$paonn <- stri_replace_all_regex(tran2$paon, "['.]", "")
 tran2$streetn <- stri_replace_all_fixed(tran2$street, "'", "")
 tran2$localityn <- stri_replace_all_regex(tran2$locality, "['.]", "")
 tran2$paonstreetn <- stri_paste(tran2$paonn, tran2$streetn, sep = ", ")
-tran2$paonstreetnlo <- stri_paste(tran2$paonstreetn, tran2$localityn, sep = ", ")
+tran2$paonstreetnlo <- stri_paste(
+  tran2$paonstreetn,
+  tran2$localityn,
+  sep = ", "
+)
 tran2$paonstreetnlo <- stri_replace_all_fixed(tran2$paonstreetnlo, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
@@ -767,7 +886,11 @@ tran2$paonn <- stri_replace_all_regex(tran2$paon, "['.]", "")
 tran2$streetn <- stri_replace_all_fixed(tran2$street, "'", "")
 tran2$localityn <- stri_replace_all_regex(tran2$locality, "['.]", "")
 tran2$paonstreetn <- stri_paste(tran2$paonn, tran2$streetn, sep = ", ")
-tran2$paonstreetnlo <- stri_paste(tran2$paonstreetn, tran2$localityn, sep = ", ")
+tran2$paonstreetnlo <- stri_paste(
+  tran2$paonstreetn,
+  tran2$localityn,
+  sep = ", "
+)
 tran2$paonstreetnlo <- stri_replace_all_fixed(tran2$paonstreetnlo, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
@@ -809,7 +932,11 @@ tran2$paonn <- stri_replace_all_regex(tran2$paon, "['.]", "")
 tran2$streetn <- stri_replace_all_fixed(tran2$street, "'", "")
 tran2$localityn <- stri_replace_all_regex(tran2$locality, "['.]", "")
 tran2$paonstreetn1 <- stri_paste(tran2$paonn, tran2$streetn, sep = " ")
-tran2$paonstreetnlo1 <- stri_paste(tran2$paonstreetn1, tran2$localityn, sep = ", ")
+tran2$paonstreetnlo1 <- stri_paste(
+  tran2$paonstreetn1,
+  tran2$localityn,
+  sep = ", "
+)
 tran2$paonstreetnlo1 <- stri_replace_all_fixed(tran2$paonstreetnlo1, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
@@ -851,7 +978,11 @@ tran2$paonn <- stri_replace_all_regex(tran2$paon, "['.]", "")
 tran2$streetn <- stri_replace_all_fixed(tran2$street, "'", "")
 tran2$localityn <- stri_replace_all_regex(tran2$locality, "['.]", "")
 tran2$paonstreetn1 <- stri_paste(tran2$paonn, tran2$streetn, sep = " ")
-tran2$paonstreetnlo1 <- stri_paste(tran2$paonstreetn1, tran2$localityn, sep = ", ")
+tran2$paonstreetnlo1 <- stri_paste(
+  tran2$paonstreetn1,
+  tran2$localityn,
+  sep = ", "
+)
 tran2$paonstreetnlo1 <- stri_replace_all_fixed(tran2$paonstreetnlo1, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
@@ -981,16 +1112,16 @@ tran2 <- anti_join_original_variables(tran2, taba40)
 taba_list <- mget(ls(pattern = "^taba"))
 
 #casa2 is the linked result through stage 2
-casa2 <- reduce(taba_list, union)
+casa2 <- bind_rows(taba_list) |> distinct()
 
 # save casa2 in duckDB and name as casabin2
-dbWriteTable(con, "casabin2", casa2, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "casabin2", casa2, overwrite = TRUE, row.names = FALSE)
 
 # Remove all the matching results
 rm(list = ls(pattern = "^taba"))
 
 # # Save the unnmatched tran2 in duckDB as tran21bin
-dbWriteTable(con, "tran21bin", tran2, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "tran21bin", tran2, overwrite = TRUE, row.names = FALSE)
 
 # ------------------stage 3------------------------------
 ###############prepare for stage 3 #############
@@ -1002,7 +1133,7 @@ tran22 <- tran2[tran2$propertytype != "F", ]
 tran24 <- tran2[tran2$propertytype == "F", ]
 
 # Save tran22 and tran24 in duckDB
-dbWriteTable(con, "tranbin22", tran22, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "tranbin22", tran22, overwrite = TRUE, row.names = FALSE)
 dbWriteTable(con, "tranbin24", tran24, overwrite = TRUE, row.names = FALSE)
 
 # Tidy up
@@ -1015,10 +1146,18 @@ epc <- epc[epc$postcode %in% unique(tran22$postcode), ]
 ###############matching rule 41 paon65streetlo=ADDRE#########
 tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
-tran221$paon65 <- word(tran221$paon, -1)
+tran221$paon65 <- stri_extract_last_regex(tran221$paon, "\\S+")
 tran221$paon65street <- stri_paste(tran221$paon65, tran221$street, sep = ", ")
-tran221$paon65streetlo <- stri_paste(tran221$paon65street, tran221$locality, sep = ", ")
-tran221$paon65streetlo <- stri_replace_all_fixed(tran221$paon65streetlo, " ", "")
+tran221$paon65streetlo <- stri_paste(
+  tran221$paon65street,
+  tran221$locality,
+  sep = ", "
+)
+tran221$paon65streetlo <- stri_replace_all_fixed(
+  tran221$paon65streetlo,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
 
@@ -1039,10 +1178,18 @@ tran22 <- anti_join_original_variables(tran22, taba41)
 
 tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
-tran221$paon65 <- word(tran221$paon, -1)
+tran221$paon65 <- stri_extract_last_regex(tran221$paon, "\\S+")
 tran221$paon65street <- stri_paste(tran221$paon65, tran221$street, sep = ", ")
-tran221$paon65streetlo <- stri_paste(tran221$paon65street, tran221$locality, sep = ", ")
-tran221$paon65streetlo <- stri_replace_all_fixed(tran221$paon65streetlo, " ", "")
+tran221$paon65streetlo <- stri_paste(
+  tran221$paon65street,
+  tran221$locality,
+  sep = ", "
+)
+tran221$paon65streetlo <- stri_replace_all_fixed(
+  tran221$paon65streetlo,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
 epc$addressfinal <- stri_replace_all_fixed(epc$addressfinal, " ", "")
@@ -1069,10 +1216,18 @@ tran221$paonn <- stri_replace_all_regex(tran221$paon, "['.]", "")
 tran221$streetn <- stri_replace_all_fixed(tran221$street, "'", "")
 tran221$localityn <- stri_replace_all_regex(tran221$locality, "['.]", "")
 
-tran221$paon65n <- word(tran221$paonn, -1)
+tran221$paon65n <- stri_extract_last_regex(tran221$paon, "\\S+")
 tran221$paon65street <- stri_paste(tran221$paon65n, tran221$streetn, sep = ", ")
-tran221$paon65streetnlo <- stri_paste(tran221$paon65street, tran221$localityn, sep = ", ")
-tran221$paon65streetnlo <- stri_replace_all_fixed(tran221$paon65streetnlo, " ", "")
+tran221$paon65streetnlo <- stri_paste(
+  tran221$paon65street,
+  tran221$localityn,
+  sep = ", "
+)
+tran221$paon65streetnlo <- stri_replace_all_fixed(
+  tran221$paon65streetnlo,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-'./ ]", "")
 
@@ -1093,10 +1248,18 @@ tran22 <- anti_join_original_variables(tran22, taba43)
 
 tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
-tran221$paon65 <- word(tran221$paon, -1)
+tran221$paon65 <- stri_extract_last_regex(tran221$paon, "\\S+")
 tran221$paon65street <- stri_paste(tran221$paon65, tran221$street, sep = " ")
-tran221$paon65streetlo1 <- stri_paste(tran221$paon65street, tran221$locality, sep = " ")
-tran221$paon65streetlo1 <- stri_replace_all_regex(tran221$paon65streetlo1, "[, ]", "")
+tran221$paon65streetlo1 <- stri_paste(
+  tran221$paon65street,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon65streetlo1 <- stri_replace_all_regex(
+  tran221$paon65streetlo1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -1119,8 +1282,16 @@ tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
 tran221$paon61 <- beg2char(tran221$paon, ",")
 tran221$paon61street1 <- stri_paste(tran221$paon61, tran221$street, sep = ", ")
-tran221$paon61streetlo <- stri_paste(tran221$paon61street1, tran221$locality, sep = ", ")
-tran221$paon61streetlo <- stri_replace_all_fixed(tran221$paon61streetlo, " ", "")
+tran221$paon61streetlo <- stri_paste(
+  tran221$paon61street1,
+  tran221$locality,
+  sep = ", "
+)
+tran221$paon61streetlo <- stri_replace_all_fixed(
+  tran221$paon61streetlo,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -1143,8 +1314,16 @@ tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
 tran221$paon61 <- beg2char(tran221$paon, ",")
 tran221$paon61street1 <- stri_paste(tran221$paon61, tran221$street, sep = " ")
-tran221$paon61streetlo1 <- stri_paste(tran221$paon61street1, tran221$locality, sep = " ")
-tran221$paon61streetlo1 <- stri_replace_all_regex(tran221$paon61streetlo1, "[, ]", "")
+tran221$paon61streetlo1 <- stri_paste(
+  tran221$paon61street1,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon61streetlo1 <- stri_replace_all_regex(
+  tran221$paon61streetlo1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -1167,8 +1346,16 @@ tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
 tran221$paon61 <- beg2char(tran221$paon, ",")
 tran221$paon61street1 <- stri_paste(tran221$paon61, tran221$street, sep = " ")
-tran221$paon61streetlo1 <- stri_paste(tran221$paon61street1, tran221$locality, sep = " ")
-tran221$paon61streetlo1 <- stri_replace_all_regex(tran221$paon61streetlo1, "[, ]", "")
+tran221$paon61streetlo1 <- stri_paste(
+  tran221$paon61street1,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon61streetlo1 <- stri_replace_all_regex(
+  tran221$paon61streetlo1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[,'./ ]", "")
 
@@ -1191,8 +1378,16 @@ tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
 tran221$paon61 <- beg2char(tran221$paon, ",")
 tran221$paon61street1 <- stri_paste(tran221$paon61, tran221$street, sep = " ")
-tran221$paon61streetlo1 <- stri_paste(tran221$paon61street1, tran221$locality, sep = " ")
-tran221$paon61streetlo1 <- stri_replace_all_regex(tran221$paon61streetlo1, "[, ]", "")
+tran221$paon61streetlo1 <- stri_paste(
+  tran221$paon61street1,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon61streetlo1 <- stri_replace_all_regex(
+  tran221$paon61streetlo1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./, ]", "")
@@ -1286,7 +1481,7 @@ tran22 <- anti_join_original_variables(tran22, taba51)
 
 tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
-tran221$paon65 <- word(tran221$paon, -1)
+tran221$paon65 <- stri_extract_last_regex(tran221$paon, "\\S+")
 tran221$paon65street <- stri_paste(tran221$paon65, tran221$street, sep = " ")
 tran221$paon65street <- stri_replace_all_regex(tran221$paon65street, "[, ]", "")
 
@@ -1309,7 +1504,7 @@ tran22 <- anti_join_original_variables(tran22, taba52)
 
 tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
-tran221$paon65 <- word(tran221$paon, -1)
+tran221$paon65 <- stri_extract_last_regex(tran221$paon, "\\S+")
 tran221$paon65street <- stri_paste(tran221$paon65, tran221$street, sep = " ")
 tran221$paon65street <- stri_replace_all_regex(tran221$paon65street, "[, ]", "")
 
@@ -1337,8 +1532,16 @@ tran221$paon62 <- char2end(tran221$paon, ",")
 
 tran221$paon66 <- stri_paste(tran221$paon62, tran221$paon61, sep = " ")
 tran221$paon66street <- stri_paste(tran221$paon66, tran221$street, sep = " ")
-tran221$paon66streetlo <- stri_paste(tran221$paon66street, tran221$locality, sep = " ")
-tran221$paon66streetlo <- stri_replace_all_regex(tran221$paon66streetlo, "[, ]", "")
+tran221$paon66streetlo <- stri_paste(
+  tran221$paon66street,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon66streetlo <- stri_replace_all_regex(
+  tran221$paon66streetlo,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add1, "[-'./, ]", "") # have added removal of spaces to align to tran; matches 14 versus 0 previously
 
@@ -1364,8 +1567,16 @@ tran221$paon62 <- char2end(tran221$paon, ",")
 
 tran221$paon66 <- stri_paste(tran221$paon62, tran221$paon61, sep = " ")
 tran221$paon66street <- stri_paste(tran221$paon66, tran221$street, sep = " ")
-tran221$paon66streetlo <- stri_paste(tran221$paon66street, tran221$locality, sep = " ")
-tran221$paon66streetlo <- stri_replace_all_regex(tran221$paon66streetlo, "[, ]", "")
+tran221$paon66streetlo <- stri_paste(
+  tran221$paon66street,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon66streetlo <- stri_replace_all_regex(
+  tran221$paon66streetlo,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = " ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "[-'./, ]", "")
@@ -1387,10 +1598,18 @@ tran22 <- anti_join_original_variables(tran22, taba55)
 
 tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
-tran221$paon65 <- word(tran221$paon, -1)
+tran221$paon65 <- stri_extract_last_regex(tran221$paon, "\\S+")
 tran221$paon65street <- stri_paste(tran221$paon65, tran221$street, sep = " ")
-tran221$paon65streetlo <- stri_paste(tran221$paon65street, tran221$locality, sep = " ")
-tran221$paon65streetlo <- stri_replace_all_regex(tran221$paon65streetlo, "[, ]", "")
+tran221$paon65streetlo <- stri_paste(
+  tran221$paon65street,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon65streetlo <- stri_replace_all_regex(
+  tran221$paon65streetlo,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add2, epc$add3, sep = " ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./, ]", "")
@@ -1432,7 +1651,11 @@ rm(tran221)
 tran22 <- anti_join_original_variables(tran22, taba57)
 
 tran22$paonstreet <- stri_paste(tran22$paon, tran22$street, sep = ", ")
-tran22$paonstreetlo3 <- stri_paste(tran22$paonstreet, tran22$locality, sep = ", ")
+tran22$paonstreetlo3 <- stri_paste(
+  tran22$paonstreet,
+  tran22$locality,
+  sep = ", "
+)
 tran22$paonstreetlo3 <- stri_replace_all_regex(tran22$paonstreetlo3, "[, ]", "")
 
 epc$add2new <- stri_replace_all_fixed(epc$add2, "-", "")
@@ -1453,7 +1676,11 @@ taba58 <-
 tran22 <- anti_join_original_variables(tran22, taba58)
 
 tran22$paonstreet <- stri_paste(tran22$paon, tran22$street, sep = ", ")
-tran22$paonstreetlo3 <- stri_paste(tran22$paonstreet, tran22$locality, sep = ", ")
+tran22$paonstreetlo3 <- stri_paste(
+  tran22$paonstreet,
+  tran22$locality,
+  sep = ", "
+)
 tran22$paonstreetlo3 <- stri_replace_all_regex(tran22$paonstreetlo3, "[, ]", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add3, sep = " ")
@@ -1473,7 +1700,11 @@ taba59 <-
 tran22 <- anti_join_original_variables(tran22, taba59)
 
 tran22$paonstreet <- stri_paste(tran22$paon, tran22$street, sep = ", ")
-tran22$paonstreetlo3 <- stri_paste(tran22$paonstreet, tran22$locality, sep = ", ")
+tran22$paonstreetlo3 <- stri_paste(
+  tran22$paonstreet,
+  tran22$locality,
+  sep = ", "
+)
 tran22$paonstreetlo3 <- stri_replace_all_regex(tran22$paonstreetlo3, "[, ]", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add3, sep = " ")
@@ -1524,7 +1755,11 @@ taba62 <-
 tran22 <- anti_join_original_variables(tran22, taba62)
 
 tran22$paonstreet <- stri_paste(tran22$paon, tran22$street, sep = ", ")
-tran22$paonstreetlo3 <- stri_paste(tran22$paonstreet, tran22$locality, sep = ", ")
+tran22$paonstreetlo3 <- stri_paste(
+  tran22$paonstreet,
+  tran22$locality,
+  sep = ", "
+)
 tran22$paonstreetlo3 <- stri_replace_all_regex(tran22$paonstreetlo3, "[, ]", "")
 
 epc1 <- epc[stri_detect_fixed(epc$add1, ","), ]
@@ -1812,16 +2047,16 @@ rm(epcq)
 taba_list <- mget(ls(pattern = "^taba"))
 
 # casa3 is the linked result from matching rules 41 to 73
-casa3 <- reduce(taba_list, union)
+casa3 <- bind_rows(taba_list) |> distinct()
 
 # save casa3 in duckDB and named as casabin3
-dbWriteTable(con, "casabin3", casa3, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "casabin3", casa3, overwrite = TRUE, row.names = FALSE)
 
 # Remove all the matching results
 rm(list = ls(pattern = "^taba"))
 
 # Save tran22 in duckDB
-dbWriteTable(con, "tran22leftbin", tran22, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "tran22leftbin", tran22, overwrite = TRUE, row.names = FALSE)
 
 # Tidy up
 rm(tran22)
@@ -1849,8 +2084,16 @@ tran221 <- tran221[!stri_detect_regex(tran221$paon61, "FLAT\\s"), ]
 tran221 <- tran221[!stri_detect_fixed(tran221$paon61, "FLOOR"), ]
 
 tran221$paon62street <- stri_paste(tran221$paon62, tran221$street, sep = ", ")
-tran221$paon62streetlo <- stri_paste(tran221$paon62street, tran221$locality, sep = ", ")
-tran221$paon62streetlo <- stri_replace_all_fixed(tran221$paon62streetlo, " ", "")
+tran221$paon62streetlo <- stri_paste(
+  tran221$paon62street,
+  tran221$locality,
+  sep = ", "
+)
+tran221$paon62streetlo <- stri_replace_all_fixed(
+  tran221$paon62streetlo,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
 
@@ -1879,8 +2122,16 @@ tran221 <- tran221[!stri_detect_fixed(tran221$paon61, "FLOOR"), ]
 tran221 <- tran221[!stri_detect_regex(tran221$paon61, "\\d"), ]
 
 tran221$paon62street <- stri_paste(tran221$paon62, tran221$street, sep = ", ")
-tran221$paon62streetlo <- stri_paste(tran221$paon62street, tran221$locality, sep = ", ")
-tran221$paon62streetlo <- stri_replace_all_fixed(tran221$paon62streetlo, " ", "")
+tran221$paon62streetlo <- stri_paste(
+  tran221$paon62street,
+  tran221$locality,
+  sep = ", "
+)
+tran221$paon62streetlo <- stri_replace_all_fixed(
+  tran221$paon62streetlo,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
 epc$addressfinal <- stri_replace_all_fixed(epc$addressfinal, " ", "")
@@ -1907,7 +2158,7 @@ tran221$paonn <- stri_replace_all_regex(tran221$paon, "['.]", "")
 tran221$streetn <- stri_replace_all_fixed(tran221$street, "'", "")
 tran221$localityn <- stri_replace_all_regex(tran221$locality, "['.]", "")
 
-tran221$paon65n <- word(tran221$paonn, -1)
+tran221$paon65n <- stri_extract_last_regex(tran221$paon, "\\S+")
 tran221$paon61 <- beg2char(tran221$paonn, ",")
 
 tran221 <- tran221[!stri_detect_regex(tran221$paon61, "FLAT\\s"), ]
@@ -1915,8 +2166,16 @@ tran221 <- tran221[!stri_detect_fixed(tran221$paon61, "FLOOR"), ]
 tran221 <- tran221[!stri_detect_regex(tran221$paon61, "\\d"), ]
 
 tran221$paon65street <- stri_paste(tran221$paon65n, tran221$streetn, sep = ", ")
-tran221$paon65streetnlo <- stri_paste(tran221$paon65street, tran221$localityn, sep = ", ")
-tran221$paon65streetnlo <- stri_replace_all_fixed(tran221$paon65streetnlo, " ", "")
+tran221$paon65streetnlo <- stri_paste(
+  tran221$paon65street,
+  tran221$localityn,
+  sep = ", "
+)
+tran221$paon65streetnlo <- stri_replace_all_fixed(
+  tran221$paon65streetnlo,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-'./ ]", "")
 
@@ -1945,8 +2204,16 @@ tran221 <- tran221[!stri_detect_fixed(tran221$paon61, "FLOOR"), ]
 tran221 <- tran221[!stri_detect_regex(tran221$paon61, "\\d"), ]
 
 tran221$paon62street <- stri_paste(tran221$paon62, tran221$street, sep = " ")
-tran221$paon62streetlo1 <- stri_paste(tran221$paon62street, tran221$locality, sep = " ")
-tran221$paon62streetlo1 <- stri_replace_all_regex(tran221$paon62streetlo1, "[, ]", "")
+tran221$paon62streetlo1 <- stri_paste(
+  tran221$paon62street,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon62streetlo1 <- stri_replace_all_regex(
+  tran221$paon62streetlo1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -1970,8 +2237,16 @@ tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
 tran221$paon61 <- beg2char(tran221$paon, ",")
 tran221$paon61street1 <- stri_paste(tran221$paon61, tran221$street, sep = ", ")
-tran221$paon61streetlo <- stri_paste(tran221$paon61street1, tran221$locality, sep = ", ")
-tran221$paon61streetlo <- stri_replace_all_fixed(tran221$paon61streetlo, " ", "")
+tran221$paon61streetlo <- stri_paste(
+  tran221$paon61street1,
+  tran221$locality,
+  sep = ", "
+)
+tran221$paon61streetlo <- stri_replace_all_fixed(
+  tran221$paon61streetlo,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -1994,8 +2269,16 @@ tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
 tran221$paon61 <- beg2char(tran221$paon, ",")
 tran221$paon61street1 <- stri_paste(tran221$paon61, tran221$street, sep = " ")
-tran221$paon61streetlo1 <- stri_paste(tran221$paon61street1, tran221$locality, sep = " ")
-tran221$paon61streetlo1 <- stri_replace_all_regex(tran221$paon61streetlo1, "[, ]", "")
+tran221$paon61streetlo1 <- stri_paste(
+  tran221$paon61street1,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon61streetlo1 <- stri_replace_all_regex(
+  tran221$paon61streetlo1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -2019,8 +2302,16 @@ tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
 tran221$paon61 <- beg2char(tran221$paon, ",")
 tran221$paon61street1 <- stri_paste(tran221$paon61, tran221$street, sep = " ")
-tran221$paon61streetlo1 <- stri_paste(tran221$paon61street1, tran221$locality, sep = " ")
-tran221$paon61streetlo1 <- stri_replace_all_regex(tran221$paon61streetlo1, "[, ]", "")
+tran221$paon61streetlo1 <- stri_paste(
+  tran221$paon61street1,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon61streetlo1 <- stri_replace_all_regex(
+  tran221$paon61streetlo1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[,'./ ]", "")
 
@@ -2042,8 +2333,16 @@ tran221 <- tran22[stri_detect_fixed(tran22$paon, ","), ]
 
 tran221$paon61 <- beg2char(tran221$paon, ",")
 tran221$paon61street1 <- stri_paste(tran221$paon61, tran221$street, sep = " ")
-tran221$paon61streetlo1 <- stri_paste(tran221$paon61street1, tran221$locality, sep = " ")
-tran221$paon61streetlo1 <- stri_replace_all_regex(tran221$paon61streetlo1, "[, ]", "")
+tran221$paon61streetlo1 <- stri_paste(
+  tran221$paon61street1,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon61streetlo1 <- stri_replace_all_regex(
+  tran221$paon61streetlo1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./, ]", "")
@@ -2095,8 +2394,16 @@ tran221$paon62 <- char2end(tran221$paon, ",")
 
 tran221$paon66 <- stri_paste(tran221$paon62, tran221$paon61, sep = " ")
 tran221$paon66street <- stri_paste(tran221$paon66, tran221$street, sep = " ")
-tran221$paon66streetlo <- stri_paste(tran221$paon66street, tran221$locality, sep = " ")
-tran221$paon66streetlo <- stri_replace_all_regex(tran221$paon66streetlo, "[, ]", "")
+tran221$paon66streetlo <- stri_paste(
+  tran221$paon66street,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon66streetlo <- stri_replace_all_regex(
+  tran221$paon66streetlo,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-'./, ]", "")
 
@@ -2122,8 +2429,16 @@ tran221$paon62 <- char2end(tran221$paon, ",")
 
 tran221$paon66 <- stri_paste(tran221$paon62, tran221$paon61, sep = " ")
 tran221$paon66street <- stri_paste(tran221$paon66, tran221$street, sep = " ")
-tran221$paon66streetlo <- stri_paste(tran221$paon66street, tran221$locality, sep = " ")
-tran221$paon66streetlo <- stri_replace_all_regex(tran221$paon66streetlo, "[, ]", "")
+tran221$paon66streetlo <- stri_paste(
+  tran221$paon66street,
+  tran221$locality,
+  sep = " "
+)
+tran221$paon66streetlo <- stri_replace_all_regex(
+  tran221$paon66streetlo,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = " ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "[-'./ ]", "")
@@ -2361,7 +2676,7 @@ cc <- tran25s[
 
 cc1$add11 <- stri_replace_all_fixed(cc1$add1, "FLAT ", "")
 
-cc1$add12 <- word(cc1$add11, 1)
+cc1$add12 <- stri_extract_first_regex(cc1$add11, "\\S+")
 cc1$add12 <- stri_replace_all_fixed(cc1$add12, ",", "")
 cc$add12 <- cc$paon
 
@@ -2487,7 +2802,11 @@ tran22 <- anti_join_original_variables(tran22, taba66)
 tran221 <- tran22[stri_detect_regex(tran22$paon, "^\\d+"), ]
 tran221$paonflat <- stri_paste("FLAT", tran221$paon, sep = " ")
 tran221$streetn5 <- stri_replace_all_regex(tran221$street, "['./]", "")
-tran221$paonfstreetn5 <- stri_paste(tran221$paonflat, tran221$streetn5, sep = " ")
+tran221$paonfstreetn5 <- stri_paste(
+  tran221$paonflat,
+  tran221$streetn5,
+  sep = " "
+)
 tran221$paonfstreetn5 <- stri_replace_all_fixed(tran221$paonfstreetn5, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add1, "['./ ]", "")
@@ -2679,7 +2998,11 @@ taba75 <-
 tran22 <- anti_join_original_variables(tran22, taba75)
 
 tran22$paonstreet <- stri_paste(tran22$paon, tran22$street, sep = " ")
-tran22$paonstreet4 <- stri_replace_all_fixed(tran22$paonstreet, "FLAT", "APARTMENT")
+tran22$paonstreet4 <- stri_replace_all_fixed(
+  tran22$paonstreet,
+  "FLAT",
+  "APARTMENT"
+)
 tran22$paonstreet4 <- stri_replace_all_regex(tran22$paonstreet4, "[, ]", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[,'./ ]", "")
@@ -2807,8 +3130,16 @@ tran221 <- tran221[!stri_detect_fixed(tran221$paon, "-"), ]
 
 tran221$paonfl <- stri_paste("FLAT", tran221$paon, sep = " ")
 tran221$streetn5 <- stri_replace_all_regex(tran221$street, "['./]", "")
-tran221$flpaon3streetn5 <- stri_paste(tran221$paonfl, tran221$streetn5, sep = " ")
-tran221$flpaon3streetn5 <- stri_replace_all_regex(tran221$flpaon3streetn5, "[- ]", "")
+tran221$flpaon3streetn5 <- stri_paste(
+  tran221$paonfl,
+  tran221$streetn5,
+  sep = " "
+)
+tran221$flpaon3streetn5 <- stri_replace_all_regex(
+  tran221$flpaon3streetn5,
+  "[- ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-,'./ ]", "")
 
@@ -2970,16 +3301,16 @@ tran22 <- anti_join_original_variables(tran22, taba88)
 taba_list <- mget(ls(pattern = "^taba"))
 
 #casa4 is the linked result from matching rules 74 to 119
-casa4 <- reduce(taba_list, union)
+casa4 <- bind_rows(taba_list) |> distinct()
 
 # save casa4 in duckDB and name as casabin4
-dbWriteTable(con, "casabin4", casa4, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "casabin4", casa4, overwrite = TRUE, row.names = FALSE)
 
 # Remove all the matching results
 rm(list = ls(pattern = "^taba"))
 
 # Save the unmatched tran in duckDB as tran24binleft
-dbWriteTable(con, "tran24binleft", tran22, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "tran24binleft", tran22, overwrite = TRUE, row.names = FALSE)
 
 rm(epc1)
 rm(tran22)
@@ -3579,7 +3910,11 @@ epc[epc$postcode == "IP4 1FP", "add"] <- gsub(
 
 ###############matching rule 120 saonpaonstreet2=ADDRE###########################
 tran$saonpaon1 <- stri_trim_both(stri_paste(tran$saon, tran$paon, sep = " "))
-tran$saonpaonstreet2 <- stri_trim_both(stri_paste(tran$saonpaon1, tran$street, sep = ", "))
+tran$saonpaonstreet2 <- stri_trim_both(stri_paste(
+  tran$saonpaon1,
+  tran$street,
+  sep = ", "
+))
 tran$saonpaonstreet2 <- stri_replace_all_fixed(tran$saonpaonstreet2, " ", "")
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
@@ -3598,7 +3933,11 @@ taba89 <-
 tran <- anti_join_original_variables(tran, taba89)
 
 tran$saonpaon1 <- stri_trim_both(stri_paste(tran$saon, tran$paon, sep = " "))
-tran$saonpaonstreet2 <- stri_trim_both(stri_paste(tran$saonpaon1, tran$street, sep = ", "))
+tran$saonpaonstreet2 <- stri_trim_both(stri_paste(
+  tran$saonpaon1,
+  tran$street,
+  sep = ", "
+))
 tran$saonpaonstreet2 <- stri_replace_all_fixed(tran$saonpaonstreet2, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
@@ -3621,7 +3960,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn <- stri_paste(tran$saonn, tran$paonn, sep = ", ")
-tran$saonpaonstreetn <- stri_trim_both(stri_paste(tran$saonpaonn, tran$streetn, sep = " "))
+tran$saonpaonstreetn <- stri_trim_both(stri_paste(
+  tran$saonpaonn,
+  tran$streetn,
+  sep = " "
+))
 tran$saonpaonstreetn <- stri_replace_all_fixed(tran$saonpaonstreetn, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
@@ -3641,10 +3984,14 @@ tran <- anti_join_original_variables(tran, taba91)
 
 tran1 <- tran[stri_detect_fixed(tran$paon, ","), ]
 
-tran1$paon65 <- word(tran1$paon, -1)
+tran1$paon65 <- stri_extract_last_regex(tran1$paon, "\\S+")
 tran1$saonpaon65 <- stri_paste(tran1$saon, tran1$paon65, sep = ", ")
 tran1$saonpaon65street <- stri_paste(tran1$saonpaon65, tran1$street, sep = ", ")
-tran1$saonpaon65street <- stri_replace_all_fixed(tran1$saonpaon65street, " ", "")
+tran1$saonpaon65street <- stri_replace_all_fixed(
+  tran1$saonpaon65street,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -3667,8 +4014,16 @@ tran <- anti_join_original_variables(tran, taba92)
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$paon62c <- char2end(tran$paon, ",")
 tran$saonpaon6 <- stri_paste(tran$saon, tran$paon62c, sep = ", ")
-tran$saonpaon62cstreetn2 <- stri_trim_both(stri_paste(tran$saonpaon6, tran$streetn, sep = " "))
-tran$saonpaon62cstreetn2 <- stri_replace_all_fixed(tran$saonpaon62cstreetn2, " ", "")
+tran$saonpaon62cstreetn2 <- stri_trim_both(stri_paste(
+  tran$saonpaon6,
+  tran$streetn,
+  sep = " "
+))
+tran$saonpaon62cstreetn2 <- stri_replace_all_fixed(
+  tran$saonpaon62cstreetn2,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add3, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -3690,7 +4045,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn <- stri_paste(tran$saonn, tran$paonn, sep = ", ")
-tran$saonpaonstreetn <- stri_trim_both(stri_paste(tran$saonpaonn, tran$streetn, sep = " "))
+tran$saonpaonstreetn <- stri_trim_both(stri_paste(
+  tran$saonpaonn,
+  tran$streetn,
+  sep = " "
+))
 tran$saonpaonstreetn <- stri_replace_all_fixed(tran$saonpaonstreetn, " ", "")
 
 epc1 <- epc[stri_detect_fixed(epc$add3, ","), ]
@@ -3717,7 +4076,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn <- stri_paste(tran$saonn, tran$paonn, sep = ", ")
-tran$saonpaonstreetn <- stri_trim_both(stri_paste(tran$saonpaonn, tran$streetn, sep = " "))
+tran$saonpaonstreetn <- stri_trim_both(stri_paste(
+  tran$saonpaonn,
+  tran$streetn,
+  sep = " "
+))
 tran$saonpaonstreetn <- stri_replace_all_fixed(tran$saonpaonstreetn, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-'./ ]", "")
@@ -3737,7 +4100,11 @@ tran$paon61x <- beg2char(tran$paon, ",")
 
 tran$saonpaon61 <- stri_paste(tran$saon, tran$paon61x, sep = " ")
 tran$saonpaon61street <- stri_paste(tran$saonpaon61, tran$street, sep = ", ")
-tran$saonpaon61street <- stri_replace_all_regex(tran$saonpaon61street, "[, ]", "")
+tran$saonpaon61street <- stri_replace_all_regex(
+  tran$saonpaon61street,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "[, ]", "")
@@ -3757,7 +4124,11 @@ tran$paon61x <- beg2char(tran$paon, ",")
 
 tran$saonpaon61 <- stri_paste(tran$saon, tran$paon61x, sep = " ")
 tran$saonpaon61street <- stri_paste(tran$saonpaon61, tran$street, sep = ", ")
-tran$saonpaon61street <- stri_replace_all_regex(tran$saonpaon61street, "[, ]", "")
+tran$saonpaon61street <- stri_replace_all_regex(
+  tran$saonpaon61street,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -3774,8 +4145,16 @@ taba943 <-
 ###############matching rule 129 saonpaon62cstreetn=ADD7##########
 tran$paon62c <- char2end(tran$paon, ",")
 tran$saonpaon62 <- stri_paste(tran$saon, tran$paon62c, sep = " ")
-tran$saonpaon62streetn <- stri_trim_both(stri_paste(tran$saonpaon62, tran$streetn, sep = " "))
-tran$saonpaon62streetn <- stri_replace_all_fixed(tran$saonpaon62streetn, " ", "")
+tran$saonpaon62streetn <- stri_trim_both(stri_paste(
+  tran$saonpaon62,
+  tran$streetn,
+  sep = " "
+))
+tran$saonpaon62streetn <- stri_replace_all_fixed(
+  tran$saonpaon62streetn,
+  " ",
+  ""
+)
 
 epc$add161 <- beg2char(epc$add1, ",")
 epc$add12com <- stri_paste(epc$add161, epc$add2, sep = " ")
@@ -3793,7 +4172,11 @@ taba9431 <-
 
 ###############matching rule 130 saonpaonstreet1=ADD13C2#################
 tran$saonpaon <- stri_paste(tran$saon, tran$paon, sep = ", ")
-tran$saonpaonstreet1 <- stri_trim_both(stri_paste(tran$saonpaon, tran$street, sep = ", "))
+tran$saonpaonstreet1 <- stri_trim_both(stri_paste(
+  tran$saonpaon,
+  tran$street,
+  sep = ", "
+))
 tran$saonpaonstreet1 <- stri_replace_all_regex(tran$saonpaonstreet1, "[, ]", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add3, sep = ", ")
@@ -3895,7 +4278,7 @@ tab124 <-
   filter(propertytype.y %in% c("Flat", "Maisonette")) |>
   select(transactionid, id)
 
-taba9452 <- reduce(list(tab121, tab123, tab124), union)
+taba9452 <- bind_rows(tab121, tab123, tab124) |> distinct()
 
 rm(tab120)
 rm(tab121)
@@ -3921,8 +4304,16 @@ tran2 <- tran1[tran1$propertytype == "F", ]
 tran2$paon61 <- beg2char(tran2$paon, ",")
 tran2$saon2 <- stri_replace_all_fixed(tran2$saon, "APARTMENT ", "")
 tran2$saon2paon61 <- stri_paste(tran2$saon2, tran2$paon61, sep = " ")
-tran2$saon2paon61street <- stri_paste(tran2$saon2paon61, tran2$street, sep = ", ")
-tran2$saon2paon61street <- stri_replace_all_fixed(tran2$saon2paon61street, " ", "")
+tran2$saon2paon61street <- stri_paste(
+  tran2$saon2paon61,
+  tran2$street,
+  sep = ", "
+)
+tran2$saon2paon61street <- stri_replace_all_fixed(
+  tran2$saon2paon61street,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-'./ ]", "")
 
@@ -3996,8 +4387,16 @@ tran2$streetn2 <- stri_replace_all_regex(tran2$street, "[-']", "")
 
 tran2$flsaon1 <- stri_paste("FLAT", tran2$saonn, sep = " ")
 tran2$flsaon1paonn <- stri_paste(tran2$flsaon1, tran2$paonn, sep = ", ")
-tran2$flsaon1paonstreetn2 <- stri_paste(tran2$flsaon1paonn, tran2$streetn2, sep = ", ")
-tran2$flsaon1paonstreetn2 <- stri_replace_all_fixed(tran2$flsaon1paonstreetn2, " ", "")
+tran2$flsaon1paonstreetn2 <- stri_paste(
+  tran2$flsaon1paonn,
+  tran2$streetn2,
+  sep = ", "
+)
+tran2$flsaon1paonstreetn2 <- stri_replace_all_fixed(
+  tran2$flsaon1paonstreetn2,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-'./ ]", "")
 
@@ -4023,7 +4422,11 @@ tran2 <- tran1[stri_detect_regex(tran1$saon, "^\\d+"), ]
 tran2$flsaon <- stri_paste("FLAT", tran2$saon, sep = " ")
 tran2$flsaonpaon <- stri_paste(tran2$flsaon, tran2$paon, sep = " ")
 tran2$flsaonpaonstreet1 <- stri_paste(tran2$flsaonpaon, tran2$street, sep = " ")
-tran2$flsaonpaonstreet1 <- stri_replace_all_regex(tran2$flsaonpaonstreet1, "[, ]", "")
+tran2$flsaonpaonstreet1 <- stri_replace_all_regex(
+  tran2$flsaonpaonstreet1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -4051,8 +4454,16 @@ tran3$paon62 <- char2end(tran3$paon, ",")
 
 tran3$flsaon <- stri_paste("FLAT", tran3$saon, sep = " ")
 tran3$flsaonpaon62 <- stri_paste(tran3$flsaon, tran3$paon62, sep = " ")
-tran3$flsaonpaon62street1 <- stri_paste(tran3$flsaonpaon62, tran3$street, sep = " ")
-tran3$flsaonpaon62street1 <- stri_replace_all_regex(tran3$flsaonpaon62street1, "[, ]", "")
+tran3$flsaonpaon62street1 <- stri_paste(
+  tran3$flsaonpaon62,
+  tran3$street,
+  sep = " "
+)
+tran3$flsaonpaon62street1 <- stri_replace_all_regex(
+  tran3$flsaonpaon62street1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -4080,8 +4491,16 @@ tran2 <- tran2[!stri_detect_regex(tran2$paon, "^\\d"), ]
 
 tran2$fldsaon <- stri_replace_all_fixed(tran2$saon, "FLAT ", "")
 tran2$fldsaonpaon <- stri_paste(tran2$fldsaon, tran2$paon, sep = " ")
-tran2$fldsaonpaonstreet1 <- stri_paste(tran2$fldsaonpaon, tran2$street, sep = " ")
-tran2$fldsaonpaonstreet1 <- stri_replace_all_regex(tran2$fldsaonpaonstreet1, "[, ]", "")
+tran2$fldsaonpaonstreet1 <- stri_paste(
+  tran2$fldsaonpaon,
+  tran2$street,
+  sep = " "
+)
+tran2$fldsaonpaonstreet1 <- stri_replace_all_regex(
+  tran2$fldsaonpaonstreet1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -4106,7 +4525,11 @@ tran2$saon7 <- stri_replace_all_fixed(tran2$saon, "FLAT ", "APARTMENT ")
 
 tran2$saon7paon <- stri_paste(tran2$saon7, tran2$paon, sep = ", ")
 tran2$saon7paonstreet1 <- stri_paste(tran2$saon7paon, tran2$street, sep = " ")
-tran2$saon7paonstreet1 <- stri_replace_all_fixed(tran2$saon7paonstreet1, " ", "")
+tran2$saon7paonstreet1 <- stri_replace_all_fixed(
+  tran2$saon7paonstreet1,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
 
@@ -4133,7 +4556,11 @@ tran2$saon7 <- stri_replace_all_fixed(tran2$saon, "FLAT ", "APARTMENT ")
 
 tran2$saon7paon <- stri_paste(tran2$saon7, tran2$paon, sep = " ")
 tran2$saon7paonstreet2 <- stri_paste(tran2$saon7paon, tran2$street, sep = " ")
-tran2$saon7paonstreet2 <- stri_replace_all_regex(tran2$saon7paonstreet2, "[, ]", "")
+tran2$saon7paonstreet2 <- stri_replace_all_regex(
+  tran2$saon7paonstreet2,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -4159,7 +4586,11 @@ tran2 <- tran1[!stri_detect_regex(tran1$saon, "^\\d"), ]
 tran2$apsaon <- stri_paste("APARTMENT", tran2$saon, sep = " ")
 tran2$apsaonpaon <- stri_paste(tran2$apsaon, tran2$paon, sep = " ")
 tran2$apsaonpaonstreet1 <- stri_paste(tran2$apsaonpaon, tran2$street, sep = " ")
-tran2$apsaonpaonstreet1 <- stri_replace_all_regex(tran2$apsaonpaonstreet1, "[, ]", "")
+tran2$apsaonpaonstreet1 <- stri_replace_all_regex(
+  tran2$apsaonpaonstreet1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -4186,7 +4617,11 @@ tran2$saon7 <- stri_replace_all_fixed(tran2$saon, "FLAT ", "APARTMENT ")
 
 tran2$saon7paon <- stri_paste(tran2$saon7, tran2$paon, sep = " ")
 tran2$saon7paonstreet2 <- stri_paste(tran2$saon7paon, tran2$street, sep = " ")
-tran2$saon7paonstreet2 <- stri_replace_all_regex(tran2$saon7paonstreet2, "[, ]", "")
+tran2$saon7paonstreet2 <- stri_replace_all_regex(
+  tran2$saon7paonstreet2,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "[, ]", "")
@@ -4213,7 +4648,11 @@ tran2 <- tran1[stri_detect_regex(tran1$saon, "^\\d"), ]
 tran2$apsaon <- stri_paste("APARTMENT", tran2$saon, sep = " ")
 tran2$apsaonpaon <- stri_paste(tran2$apsaon, tran2$paon, sep = " ")
 tran2$apsaonpaonstreet1 <- stri_paste(tran2$apsaonpaon, tran2$street, sep = " ")
-tran2$apsaonpaonstreet1 <- stri_replace_all_regex(tran2$apsaonpaonstreet1, "[, ]", "")
+tran2$apsaonpaonstreet1 <- stri_replace_all_regex(
+  tran2$apsaonpaonstreet1,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "[, ]", "")
@@ -4239,7 +4678,11 @@ tran$saon71 <- stri_replace_all_fixed(tran$saon7, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saon7paonn <- stri_paste(tran$saon71, tran$paonn, sep = ", ")
-tran$saon7paonstreetn <- stri_trim_both(stri_paste(tran$saon7paonn, tran$streetn, sep = " "))
+tran$saon7paonstreetn <- stri_trim_both(stri_paste(
+  tran$saon7paonn,
+  tran$streetn,
+  sep = " "
+))
 tran$saon7paonstreetn <- stri_replace_all_fixed(tran$saon7paonstreetn, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-./ ]", "")
@@ -4285,7 +4728,11 @@ tran$saonn4 <- stri_replace_all_fixed(tran$fldsaon1, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saon4paonn <- stri_paste(tran$saonn4, tran$paonn, sep = ", ")
-tran$saon4paonstreetn <- stri_trim_both(stri_paste(tran$saon4paonn, tran$streetn, sep = " "))
+tran$saon4paonstreetn <- stri_trim_both(stri_paste(
+  tran$saon4paonn,
+  tran$streetn,
+  sep = " "
+))
 tran$saon4paonstreetn <- stri_replace_all_fixed(tran$saon4paonstreetn, " ", "")
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-./ ]", "")
@@ -4310,8 +4757,16 @@ tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 tran1$paon62 <- char2end(tran1$paon, ",")
 tran1$apsaon <- stri_paste("APARTMENT", tran1$saon, sep = " ")
 tran1$apsaonpaon6 <- stri_paste(tran1$apsaon, tran1$paon62, sep = ", ")
-tran1$apsaonpaon6streetn <- stri_trim_both(stri_paste(tran1$apsaonpaon6, tran1$streetn, sep = " "))
-tran1$apsaonpaon6streetn <- stri_replace_all_fixed(tran1$apsaonpaon6streetn, " ", "")
+tran1$apsaonpaon6streetn <- stri_trim_both(stri_paste(
+  tran1$apsaonpaon6,
+  tran1$streetn,
+  sep = " "
+))
+tran1$apsaonpaon6streetn <- stri_replace_all_fixed(
+  tran1$apsaonpaon6streetn,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-./ ]", "")
 
@@ -4335,8 +4790,16 @@ tran1$flsaon <- stri_paste("FLAT", tran1$saon, sep = " ")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 tran1$flsaonpaon <- stri_paste(tran1$flsaon, tran1$paonn, sep = ", ")
-tran1$flsaonpaonstreetn <- stri_trim_both(stri_paste(tran1$flsaonpaon, tran1$streetn, sep = " "))
-tran1$flsaonpaonstreetn <- stri_replace_all_fixed(tran1$flsaonpaonstreetn, " ", "")
+tran1$flsaonpaonstreetn <- stri_trim_both(stri_paste(
+  tran1$flsaonpaon,
+  tran1$streetn,
+  sep = " "
+))
+tran1$flsaonpaonstreetn <- stri_replace_all_fixed(
+  tran1$flsaonpaonstreetn,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-./ ]", "")
 
@@ -4362,8 +4825,16 @@ tran1$saonn4 <- stri_replace_all_fixed(tran1$saon4, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 tran1$saon4paonn <- stri_paste(tran1$saonn4, tran1$paonn, sep = " ")
-tran1$saon4paonstreetn3 <- stri_trim_both(stri_paste(tran1$saon4paonn, tran1$streetn, sep = " "))
-tran1$saon4paonstreetn3 <- stri_replace_all_fixed(tran1$saon4paonstreetn3, " ", "")
+tran1$saon4paonstreetn3 <- stri_trim_both(stri_paste(
+  tran1$saon4paonn,
+  tran1$streetn,
+  sep = " "
+))
+tran1$saon4paonstreetn3 <- stri_replace_all_fixed(
+  tran1$saon4paonstreetn3,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[./ ]", "")
 
@@ -4388,8 +4859,16 @@ tran$saonn4 <- stri_replace_all_fixed(tran$saon4, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saon4paonn <- stri_paste(tran$saonn4, tran$paonn, sep = ", ")
-tran$saon4paonstreetn4 <- stri_trim_both(stri_paste(tran$saon4paonn, tran$streetn, sep = ", "))
-tran$saon4paonstreetn4 <- stri_replace_all_fixed(tran$saon4paonstreetn4, " ", "")
+tran$saon4paonstreetn4 <- stri_trim_both(stri_paste(
+  tran$saon4paonn,
+  tran$streetn,
+  sep = ", "
+))
+tran$saon4paonstreetn4 <- stri_replace_all_fixed(
+  tran$saon4paonstreetn4,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4414,8 +4893,16 @@ tran1$saonn4 <- stri_replace_all_fixed(tran1$saon4, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 tran1$saon4paonn1 <- stri_paste(tran1$saonn4, tran1$paonn, sep = " ")
-tran1$saon4paonstreetn1 <- stri_trim_both(stri_paste(tran1$saon4paonn1, tran1$streetn, sep = ", "))
-tran1$saon4paonstreetn1 <- stri_replace_all_fixed(tran1$saon4paonstreetn1, " ", "")
+tran1$saon4paonstreetn1 <- stri_trim_both(stri_paste(
+  tran1$saon4paonn1,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon4paonstreetn1 <- stri_replace_all_fixed(
+  tran1$saon4paonstreetn1,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4446,8 +4933,16 @@ tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 
 tran1$saon1paonn <- stri_paste(tran1$saonn1, tran1$paonn, sep = " ")
-tran1$saon1paonstreetn <- stri_trim_both(stri_paste(tran1$saon1paonn, tran1$streetn, sep = ", "))
-tran1$saon1paonstreetn <- stri_replace_all_fixed(tran1$saon1paonstreetn, " ", "")
+tran1$saon1paonstreetn <- stri_trim_both(stri_paste(
+  tran1$saon1paonn,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon1paonstreetn <- stri_replace_all_fixed(
+  tran1$saon1paonstreetn,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -4477,8 +4972,16 @@ tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 
 tran1$saon1paonn <- stri_paste(tran1$saonn1, tran1$paonn, sep = " ")
-tran1$saon1paonstreetn <- stri_trim_both(stri_paste(tran1$saon1paonn, tran1$streetn, sep = ", "))
-tran1$saon1paonstreetn <- stri_replace_all_fixed(tran1$saon1paonstreetn, " ", "")
+tran1$saon1paonstreetn <- stri_trim_both(stri_paste(
+  tran1$saon1paonn,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon1paonstreetn <- stri_replace_all_fixed(
+  tran1$saon1paonstreetn,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4509,8 +5012,16 @@ tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 
 tran1$saon1paonn1 <- stri_paste(tran1$saonn1, tran1$paonn, sep = ", ")
-tran1$saon1paonstreetn1 <- stri_trim_both(stri_paste(tran1$saon1paonn1, tran1$streetn, sep = ", "))
-tran1$saon1paonstreetn1 <- stri_replace_all_fixed(tran1$saon1paonstreetn1, " ", "")
+tran1$saon1paonstreetn1 <- stri_trim_both(stri_paste(
+  tran1$saon1paonn1,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon1paonstreetn1 <- stri_replace_all_fixed(
+  tran1$saon1paonstreetn1,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -4540,8 +5051,16 @@ tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 
 tran1$saon1paonn1 <- stri_paste(tran1$saonn1, tran1$paonn, sep = ", ")
-tran1$saon1paonstreetn1 <- stri_trim_both(stri_paste(tran1$saon1paonn1, tran1$streetn, sep = ", "))
-tran1$saon1paonstreetn1 <- stri_replace_all_fixed(tran1$saon1paonstreetn1, " ", "")
+tran1$saon1paonstreetn1 <- stri_trim_both(stri_paste(
+  tran1$saon1paonn1,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon1paonstreetn1 <- stri_replace_all_fixed(
+  tran1$saon1paonstreetn1,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4572,8 +5091,16 @@ tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 
 tran1$saon1paonn <- stri_paste(tran1$saonn1, tran1$paonn, sep = " ")
-tran1$saon1paonstreetn2 <- stri_trim_both(stri_paste(tran1$saon1paonn, tran1$streetn, sep = " "))
-tran1$saon1paonstreetn2 <- stri_replace_all_regex(tran1$saon1paonstreetn2, "[, ]", "")
+tran1$saon1paonstreetn2 <- stri_trim_both(stri_paste(
+  tran1$saon1paonn,
+  tran1$streetn,
+  sep = " "
+))
+tran1$saon1paonstreetn2 <- stri_replace_all_regex(
+  tran1$saon1paonstreetn2,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[,'./ ]", "")
 
@@ -4601,9 +5128,21 @@ tran1$saon1 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "FLAT ")
 tran1$saonn1 <- stri_replace_all_fixed(tran1$saon1, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
-tran1$saonpaonn1 <- stri_trim_both(stri_paste(tran1$saonn1, tran1$paonn, sep = " "))
-tran1$saon1paonstreetn2 <- stri_trim_both(stri_paste(tran1$saonpaonn1, tran1$streetn, sep = " "))
-tran1$saon1paonstreetn2 <- stri_replace_all_fixed(tran1$saon1paonstreetn2, " ", "")
+tran1$saonpaonn1 <- stri_trim_both(stri_paste(
+  tran1$saonn1,
+  tran1$paonn,
+  sep = " "
+))
+tran1$saon1paonstreetn2 <- stri_trim_both(stri_paste(
+  tran1$saonpaonn1,
+  tran1$streetn,
+  sep = " "
+))
+tran1$saon1paonstreetn2 <- stri_replace_all_fixed(
+  tran1$saon1paonstreetn2,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./, ]", "")
@@ -4631,8 +5170,16 @@ tran2 <- tran1[stri_detect_fixed(tran1$paon, ","), ]
 tran2$paon61 <- beg2char(tran2$paon, ",")
 tran2$saon2 <- stri_replace_all_fixed(tran2$saon, "APARTMENT ", "")
 tran2$saon2paon61 <- stri_paste(tran2$saon2, tran2$paon61, sep = " ")
-tran2$saon2paon61street <- stri_paste(tran2$saon2paon61, tran2$street, sep = ", ")
-tran2$saon2paon61street <- stri_replace_all_fixed(tran2$saon2paon61street, " ", "")
+tran2$saon2paon61street <- stri_paste(
+  tran2$saon2paon61,
+  tran2$street,
+  sep = ", "
+)
+tran2$saon2paon61street <- stri_replace_all_fixed(
+  tran2$saon2paon61street,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4661,9 +5208,21 @@ tran1$saon2 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "")
 tran1$saonn2 <- stri_replace_all_fixed(tran1$saon2, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
-tran1$saon2paonn1 <- stri_trim_both(stri_paste(tran1$saonn2, tran1$paonn, sep = " "))
-tran1$saon2paonstreetn3 <- stri_trim_both(stri_paste(tran1$saon2paonn1, tran1$streetn, sep = " "))
-tran1$saon2paonstreetn3 <- stri_replace_all_fixed(tran1$saon2paonstreetn3, " ", "")
+tran1$saon2paonn1 <- stri_trim_both(stri_paste(
+  tran1$saonn2,
+  tran1$paonn,
+  sep = " "
+))
+tran1$saon2paonstreetn3 <- stri_trim_both(stri_paste(
+  tran1$saon2paonn1,
+  tran1$streetn,
+  sep = " "
+))
+tran1$saon2paonstreetn3 <- stri_replace_all_fixed(
+  tran1$saon2paonstreetn3,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -4689,10 +5248,22 @@ tran1$saon2 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "")
 tran1$saonn2 <- stri_replace_all_fixed(tran1$saon2, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
-tran1$saon2paonn1 <- stri_trim_both(stri_paste(tran1$saonn2, tran1$paonn, sep = " "))
-tran1$saon2paonstreetn3 <- stri_trim_both(stri_paste(tran1$saon2paonn1, tran1$streetn, sep = " "))
+tran1$saon2paonn1 <- stri_trim_both(stri_paste(
+  tran1$saonn2,
+  tran1$paonn,
+  sep = " "
+))
+tran1$saon2paonstreetn3 <- stri_trim_both(stri_paste(
+  tran1$saon2paonn1,
+  tran1$streetn,
+  sep = " "
+))
 
-tran1$saon2paonstreetn3 <- stri_replace_all_fixed(tran1$saon2paonstreetn3, " ", "")
+tran1$saon2paonstreetn3 <- stri_replace_all_fixed(
+  tran1$saon2paonstreetn3,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4720,9 +5291,21 @@ tran1$saon2 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "")
 tran1$saonn2 <- stri_replace_all_fixed(tran1$saon2, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
-tran1$saon2paonn1 <- stri_trim_both(stri_paste(tran1$saonn2, tran1$paonn, sep = " "))
-tran1$saon2paonstreetn2 <- stri_trim_both(stri_paste(tran1$saon2paonn1, tran1$streetn, sep = ", "))
-tran1$saon2paonstreetn2 <- stri_replace_all_fixed(tran1$saon2paonstreetn2, " ", "")
+tran1$saon2paonn1 <- stri_trim_both(stri_paste(
+  tran1$saonn2,
+  tran1$paonn,
+  sep = " "
+))
+tran1$saon2paonstreetn2 <- stri_trim_both(stri_paste(
+  tran1$saon2paonn1,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon2paonstreetn2 <- stri_replace_all_fixed(
+  tran1$saon2paonstreetn2,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -4749,9 +5332,21 @@ tran1$saon2 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "")
 tran1$saonn2 <- stri_replace_all_fixed(tran1$saon2, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
-tran1$saon2paonn1 <- stri_trim_both(stri_paste(tran1$saonn2, tran1$paonn, sep = " "))
-tran1$saon2paonstreetn2 <- stri_trim_both(stri_paste(tran1$saon2paonn1, tran1$streetn, sep = ", "))
-tran1$saon2paonstreetn2 <- stri_replace_all_fixed(tran1$saon2paonstreetn2, " ", "")
+tran1$saon2paonn1 <- stri_trim_both(stri_paste(
+  tran1$saonn2,
+  tran1$paonn,
+  sep = " "
+))
+tran1$saon2paonstreetn2 <- stri_trim_both(stri_paste(
+  tran1$saon2paonn1,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon2paonstreetn2 <- stri_replace_all_fixed(
+  tran1$saon2paonstreetn2,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4810,8 +5405,16 @@ tran11 <- tran11[stri_detect_fixed(tran11$paon, ","), ]
 tran11$paon62 <- char2end(tran11$paon, ",")
 
 tran11$saonpaon6 <- stri_paste(tran11$saon, tran11$paon62, sep = ", ")
-tran11$saonpaon62street <- stri_paste(tran11$saonpaon6, tran11$street, sep = " ")
-tran11$saonpaon62street <- stri_replace_all_fixed(tran11$saonpaon62street, " ", "")
+tran11$saonpaon62street <- stri_paste(
+  tran11$saonpaon6,
+  tran11$street,
+  sep = " "
+)
+tran11$saonpaon62street <- stri_replace_all_fixed(
+  tran11$saonpaon62street,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4840,8 +5443,16 @@ tran11$saon1 <- stri_replace_all_fixed(tran11$saon, "APARTMENT ", "FLAT ")
 tran11$saon1 <- stri_replace_all_fixed(tran11$saon1, "/", "")
 
 tran11$saonpaonn6 <- stri_paste(tran11$saon1, tran11$paon62, sep = ", ")
-tran11$saon1paonstreet6n1 <- stri_paste(tran11$saonpaonn6, tran11$street, sep = " ")
-tran11$saon1paonstreet6n1 <- stri_replace_all_fixed(tran11$saon1paonstreet6n1, " ", "")
+tran11$saon1paonstreet6n1 <- stri_paste(
+  tran11$saonpaonn6,
+  tran11$street,
+  sep = " "
+)
+tran11$saon1paonstreet6n1 <- stri_replace_all_fixed(
+  tran11$saon1paonstreet6n1,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4868,8 +5479,16 @@ tran11$saonn2 <- stri_replace_all_fixed(tran11$saon2, "/", "")
 tran11$paonn <- stri_replace_all_regex(tran11$paon, "['.]", "")
 
 tran11$saonn2paon1 <- stri_paste(tran11$saonn2, tran11$paonn, sep = ", ")
-tran11$saon2paonstreetn <- stri_paste(tran11$saonn2paon1, tran11$street, sep = " ")
-tran11$saon2paonstreetn <- stri_replace_all_fixed(tran11$saon2paonstreetn, " ", "")
+tran11$saon2paonstreetn <- stri_paste(
+  tran11$saonn2paon1,
+  tran11$street,
+  sep = " "
+)
+tran11$saon2paonstreetn <- stri_replace_all_fixed(
+  tran11$saon2paonstreetn,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4896,8 +5515,16 @@ tran11 <- tran[stri_detect_fixed(tran$saon, "APARTMENT "), ]
 tran11$saonn3 <- stri_replace_all_regex(tran11$saon, "[./]", "")
 tran11$paonn <- stri_replace_all_regex(tran11$paon, "['.]", "")
 tran11$saonn3paonn <- stri_paste(tran11$saonn3, tran11$paonn, sep = ", ")
-tran11$saonn3paonnstreet <- stri_paste(tran11$saonn3paonn, tran11$street, sep = " ")
-tran11$saonn3paonnstreet <- stri_replace_all_fixed(tran11$saonn3paonnstreet, " ", "")
+tran11$saonn3paonnstreet <- stri_paste(
+  tran11$saonn3paonn,
+  tran11$street,
+  sep = " "
+)
+tran11$saonn3paonnstreet <- stri_replace_all_fixed(
+  tran11$saonn3paonnstreet,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add3, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -4924,8 +5551,16 @@ tran11$saonn2 <- stri_replace_all_fixed(tran11$saon2, "/", "")
 tran11$paonn <- stri_replace_all_regex(tran11$paon, "['.]", "")
 
 tran11$saonn2paonn1 <- stri_paste(tran11$saonn2, tran11$paonn, sep = ", ")
-tran11$saonn2paonn1streetn <- stri_paste(tran11$saonn2paonn1, tran11$street, sep = " ")
-tran11$saonn2paonn1streetn <- stri_replace_all_fixed(tran11$saonn2paonn1streetn, " ", "")
+tran11$saonn2paonn1streetn <- stri_paste(
+  tran11$saonn2paonn1,
+  tran11$street,
+  sep = " "
+)
+tran11$saonn2paonn1streetn <- stri_replace_all_fixed(
+  tran11$saonn2paonn1streetn,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -4954,8 +5589,16 @@ tran1$paon62 <- char2end(tran1$paon, ",")
 
 tran1$paon62saon <- stri_paste(tran1$paon62, tran1$saon, sep = " ")
 tran1$paon62saonp <- stri_paste(tran1$paon62saon, tran1$paon61, sep = " ")
-tran1$paon62saonpstreet <- stri_trim_both(stri_paste(tran1$paon62saonp, tran1$street, sep = ", "))
-tran1$paon62saonpstreet <- stri_replace_all_regex(tran1$paon62saonpstreet, "[, ]", "")
+tran1$paon62saonpstreet <- stri_trim_both(stri_paste(
+  tran1$paon62saonp,
+  tran1$street,
+  sep = ", "
+))
+tran1$paon62saonpstreet <- stri_replace_all_regex(
+  tran1$paon62saonpstreet,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -4983,8 +5626,16 @@ tran11$streetn <- stri_replace_all_fixed(tran11$street, "'", "")
 
 tran11$paon62 <- char2end(tran11$paonn, ",")
 tran11$saonpaon62 <- stri_paste(tran11$saon, tran11$paon62, sep = ", ")
-tran11$saonpaon62streetn1 <- stri_trim_both(stri_paste(tran11$saonpaon62, tran11$streetn, sep = ", "))
-tran11$saonpaon62streetn1 <- stri_replace_all_fixed(tran11$saonpaon62streetn1, " ", "")
+tran11$saonpaon62streetn1 <- stri_trim_both(stri_paste(
+  tran11$saonpaon62,
+  tran11$streetn,
+  sep = ", "
+))
+tran11$saonpaon62streetn1 <- stri_replace_all_fixed(
+  tran11$saonpaon62streetn1,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -5011,8 +5662,16 @@ tran11$paonn <- stri_replace_all_regex(tran11$paon, "['.]", "")
 tran11$streetn <- stri_replace_all_fixed(tran11$street, "'", "")
 tran11$paon62c <- char2end(tran11$paonn, ",")
 tran11$saon1paonn6 <- stri_paste(tran11$saonn1, tran11$paon62c, sep = ", ")
-tran11$saon1paonstreet6n <- stri_trim_both(stri_paste(tran11$saon1paonn6, tran11$streetn, sep = ", "))
-tran11$saon1paonstreet6n <- stri_replace_all_fixed(tran11$saon1paonstreet6n, " ", "")
+tran11$saon1paonstreet6n <- stri_trim_both(stri_paste(
+  tran11$saon1paonn6,
+  tran11$streetn,
+  sep = ", "
+))
+tran11$saon1paonstreet6n <- stri_replace_all_fixed(
+  tran11$saon1paonstreet6n,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -5040,9 +5699,21 @@ tran1$saon2 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "")
 tran1$saonn2 <- stri_replace_all_fixed(tran1$saon2, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
-tran1$saon2paonn1 <- stri_trim_both(stri_paste(tran1$saonn2, tran1$paonn, sep = ", "))
-tran1$saon2paonstreetn4 <- stri_trim_both(stri_paste(tran1$saon2paonn1, tran1$streetn, sep = ", "))
-tran1$saon2paonstreetn4 <- stri_replace_all_fixed(tran1$saon2paonstreetn4, " ", "")
+tran1$saon2paonn1 <- stri_trim_both(stri_paste(
+  tran1$saonn2,
+  tran1$paonn,
+  sep = ", "
+))
+tran1$saon2paonstreetn4 <- stri_trim_both(stri_paste(
+  tran1$saon2paonn1,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon2paonstreetn4 <- stri_replace_all_fixed(
+  tran1$saon2paonstreetn4,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -5069,9 +5740,21 @@ tran1$saon2 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "")
 tran1$saonn2 <- stri_replace_all_fixed(tran1$saon2, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
-tran1$saon2paonn1 <- stri_trim_both(stri_paste(tran1$saonn2, tran1$paonn, sep = ", "))
-tran1$saon2paonstreetn4 <- stri_trim_both(stri_paste(tran1$saon2paonn1, tran1$streetn, sep = ", "))
-tran1$saon2paonstreetn4 <- stri_replace_all_fixed(tran1$saon2paonstreetn4, " ", "")
+tran1$saon2paonn1 <- stri_trim_both(stri_paste(
+  tran1$saonn2,
+  tran1$paonn,
+  sep = ", "
+))
+tran1$saon2paonstreetn4 <- stri_trim_both(stri_paste(
+  tran1$saon2paonn1,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon2paonstreetn4 <- stri_replace_all_fixed(
+  tran1$saon2paonstreetn4,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -5101,8 +5784,16 @@ tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 
 tran1$saon2paonn1 <- stri_paste(tran1$saonn2, tran1$paonn, sep = ", ")
-tran1$saon2paonstreetn4 <- stri_trim_both(stri_paste(tran1$saon2paonn1, tran1$streetn, sep = ", "))
-tran1$saon2paonstreetn4 <- stri_replace_all_fixed(tran1$saon2paonstreetn4, " ", "")
+tran1$saon2paonstreetn4 <- stri_trim_both(stri_paste(
+  tran1$saon2paonn1,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon2paonstreetn4 <- stri_replace_all_fixed(
+  tran1$saon2paonstreetn4,
+  " ",
+  ""
+)
 
 epc$add1num <- numextract(epc$add1)
 epc$addressfinal <- stri_paste(epc$add1num, epc$add2, sep = ", ")
@@ -5135,8 +5826,16 @@ tran1$saonn5 <- stri_replace_all_fixed(tran1$saon5, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 tran1$saon5paonn <- stri_paste(tran1$saonn5, tran1$paonn, sep = " ")
-tran1$saon5paonstreetn1 <- stri_trim_both(stri_paste(tran1$saon5paonn, tran1$streetn, sep = ", "))
-tran1$saon5paonstreetn1 <- stri_replace_all_fixed(tran1$saon5paonstreetn1, " ", "")
+tran1$saon5paonstreetn1 <- stri_trim_both(stri_paste(
+  tran1$saon5paonn,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon5paonstreetn1 <- stri_replace_all_fixed(
+  tran1$saon5paonstreetn1,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -5167,8 +5866,16 @@ tran1$saonn2 <- stri_replace_all_fixed(tran1$saon2, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 tran1$paonsaon2 <- stri_paste(tran1$paonn, tran1$saonn2, sep = " ")
-tran1$paonsaon2streetn <- stri_trim_both(stri_paste(tran1$paonsaon2, tran1$streetn, sep = " "))
-tran1$paonsaon2streetn <- stri_replace_all_fixed(tran1$paonsaon2streetn, " ", "")
+tran1$paonsaon2streetn <- stri_trim_both(stri_paste(
+  tran1$paonsaon2,
+  tran1$streetn,
+  sep = " "
+))
+tran1$paonsaon2streetn <- stri_replace_all_fixed(
+  tran1$paonsaon2streetn,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add1, "['./ ]", "")
 
@@ -5196,9 +5903,21 @@ tran1$saon2 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "")
 tran1$saonn2 <- stri_replace_all_fixed(tran1$saon2, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
-tran1$saon2paonn1 <- stri_trim_both(stri_paste(tran1$saonn2, tran1$paonn, sep = " "))
-tran1$saon2paonstreetn2 <- stri_trim_both(stri_paste(tran1$saon2paonn1, tran1$streetn, sep = ", "))
-tran1$saon2paonstreetn2 <- stri_replace_all_fixed(tran1$saon2paonstreetn2, " ", "")
+tran1$saon2paonn1 <- stri_trim_both(stri_paste(
+  tran1$saonn2,
+  tran1$paonn,
+  sep = " "
+))
+tran1$saon2paonstreetn2 <- stri_trim_both(stri_paste(
+  tran1$saon2paonn1,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon2paonstreetn2 <- stri_replace_all_fixed(
+  tran1$saon2paonstreetn2,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add3, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -5230,8 +5949,16 @@ tran11$paon62 <- char2end(tran11$paon, ",")
 
 tran11$saonpaon62 <- stri_paste(tran11$saon, tran11$paon62, sep = ", ")
 tran11$saonpaon66 <- stri_paste(tran11$saonpaon62, tran11$paon61, sep = " ")
-tran11$saonpaon66street <- stri_paste(tran11$saonpaon66, tran11$street, sep = " ")
-tran11$saonpaon66street <- stri_replace_all_regex(tran11$saonpaon66street, "[, ]", "")
+tran11$saonpaon66street <- stri_paste(
+  tran11$saonpaon66,
+  tran11$street,
+  sep = " "
+)
+tran11$saonpaon66street <- stri_replace_all_regex(
+  tran11$saonpaon66street,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, "'", "")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "[, ]", "")
@@ -5261,8 +5988,16 @@ tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 
 tran1$saon1paonn <- stri_paste(tran1$saonn1, tran1$paonn, sep = ", ")
-tran1$saon1paonstreetn3 <- stri_trim_both(stri_paste(tran1$saon1paonn, tran1$streetn, sep = " "))
-tran1$saon1paonstreetn3 <- stri_replace_all_fixed(tran1$saon1paonstreetn3, " ", "")
+tran1$saon1paonstreetn3 <- stri_trim_both(stri_paste(
+  tran1$saon1paonn,
+  tran1$streetn,
+  sep = " "
+))
+tran1$saon1paonstreetn3 <- stri_replace_all_fixed(
+  tran1$saon1paonstreetn3,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -5317,8 +6052,16 @@ tran11 <- tran[stri_detect_fixed(tran$saon, "APARTMENT "), ]
 tran11$saon1 <- stri_replace_all_fixed(tran11$saon, "APARTMENT ", "FLAT ")
 
 tran11$saon1paon <- stri_paste(tran11$saon1, tran11$paon, sep = ", ")
-tran11$saon1paonstreet <- stri_trim_both(stri_paste(tran11$saon1paon, tran11$street, sep = " "))
-tran11$saon1paonstreet <- stri_replace_all_fixed(tran11$saon1paonstreet, " ", "")
+tran11$saon1paonstreet <- stri_trim_both(stri_paste(
+  tran11$saon1paon,
+  tran11$street,
+  sep = " "
+))
+tran11$saon1paonstreet <- stri_replace_all_fixed(
+  tran11$saon1paonstreet,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
 
@@ -5400,8 +6143,16 @@ tran1$sao1 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "FLAT ")
 tran1$paon61c <- beg2char(tran1$paon, ",")
 
 tran1$saon1paon61 <- stri_paste(tran1$sao1, tran1$paon61c, sep = " ")
-tran1$saon1paon61street <- stri_trim_both(stri_paste(tran1$saon1paon61, tran1$street, sep = ", "))
-tran1$saon1paon61street <- stri_replace_all_fixed(tran1$saon1paon61street, " ", "")
+tran1$saon1paon61street <- stri_trim_both(stri_paste(
+  tran1$saon1paon61,
+  tran1$street,
+  sep = ", "
+))
+tran1$saon1paon61street <- stri_replace_all_fixed(
+  tran1$saon1paon61street,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
 epc$addressfinal <- stri_replace_all_fixed(epc$addressfinal, " ", "")
@@ -5488,8 +6239,16 @@ tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 
 tran1$saon1paonn <- stri_paste(tran1$saonn1, tran1$paonn, sep = " ")
-tran1$saon1paonstreetn2 <- stri_trim_both(stri_paste(tran1$saon1paonn, tran1$streetn, sep = " "))
-tran1$saon1paonstreetn2 <- stri_replace_all_regex(tran1$saon1paonstreetn2, "[, ]", "")
+tran1$saon1paonstreetn2 <- stri_trim_both(stri_paste(
+  tran1$saon1paonn,
+  tran1$streetn,
+  sep = " "
+))
+tran1$saon1paonstreetn2 <- stri_replace_all_regex(
+  tran1$saon1paonstreetn2,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "[, ]", "")
@@ -5519,8 +6278,16 @@ tran1$paon641 <- char2end(tran1$paon, " ")
 
 tran1$psaon <- stri_paste(tran1$paon64, tran1$saon, sep = "")
 tran1$psaonpaon <- stri_paste(tran1$psaon, tran1$paon641, sep = " ")
-tran1$psaonpaonstreet <- stri_trim_both(stri_paste(tran1$psaonpaon, tran1$street, sep = ", "))
-tran1$psaonpaonstreet <- stri_replace_all_regex(tran1$psaonpaonstreet, "[, ]", "")
+tran1$psaonpaonstreet <- stri_trim_both(stri_paste(
+  tran1$psaonpaon,
+  tran1$street,
+  sep = ", "
+))
+tran1$psaonpaonstreet <- stri_replace_all_regex(
+  tran1$psaonpaonstreet,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -5549,8 +6316,16 @@ tran1$saon2 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "")
 tran1$paon62 <- char2end(tran1$paon, ",")
 
 tran1$saon2paon62 <- stri_paste(tran1$saon2, tran1$paon62, sep = ", ")
-tran1$saon2paon62street <- stri_paste(tran1$saon2paon62, tran1$street, sep = ", ")
-tran1$saon2paon62street <- stri_replace_all_fixed(tran1$saon2paon62street, " ", "")
+tran1$saon2paon62street <- stri_paste(
+  tran1$saon2paon62,
+  tran1$street,
+  sep = ", "
+)
+tran1$saon2paon62street <- stri_replace_all_fixed(
+  tran1$saon2paon62street,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
 epc$addressfinal <- stri_replace_all_fixed(epc$addressfinal, " ", "")
@@ -5577,8 +6352,16 @@ tran11 <- tran[stri_detect_fixed(tran$saon, "APARTMENT "), ]
 tran11$saon2 <- stri_replace_all_fixed(tran11$saon, "APARTMENT ", "")
 
 tran11$saon2paon <- stri_paste(tran11$saon2, tran11$paon, sep = " ")
-tran11$saon2paonstreet <- stri_paste(tran11$saon2paon, tran11$street, sep = ", ")
-tran11$saon2paonstreet <- stri_replace_all_fixed(tran11$saon2paonstreet, " ", "")
+tran11$saon2paonstreet <- stri_paste(
+  tran11$saon2paon,
+  tran11$street,
+  sep = ", "
+)
+tran11$saon2paonstreet <- stri_replace_all_fixed(
+  tran11$saon2paonstreet,
+  " ",
+  ""
+)
 
 epc1 <- epc[stri_detect_fixed(epc$add2, ","), ]
 epc11 <- epc1[stri_detect_regex(epc1$add2, "\\d+-\\d+"), ]
@@ -5606,7 +6389,11 @@ tran$saonn <- stri_replace_all_fixed(tran$saon, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saonpaonn1 <- stri_trim_both(stri_paste(tran$saonn, tran$paonn, sep = " "))
-tran$saonpaonstreetn2 <- stri_trim_both(stri_paste(tran$saonpaonn1, tran$streetn, sep = ", "))
+tran$saonpaonstreetn2 <- stri_trim_both(stri_paste(
+  tran$saonpaonn1,
+  tran$streetn,
+  sep = ", "
+))
 tran$saonpaonstreetn2 <- stri_replace_all_fixed(tran$saonpaonstreetn2, " ", "")
 
 epc$add161x <- beg2char(epc$add1, ",")
@@ -5633,7 +6420,11 @@ tran2 <- tran2[!stri_detect_fixed(tran2$paon, ","), ]
 tran2$flsaon <- stri_paste("FLAT ", tran2$saon, sep = "")
 tran2$flsaonpaon <- stri_paste(tran2$flsaon, tran2$paon, sep = ", ")
 tran2$flsaonpaonstreet <- stri_paste(tran2$flsaonpaon, tran2$street, sep = ", ")
-tran2$flsaonpaonstreet <- stri_replace_all_regex(tran2$flsaonpaonstreet, "[, ]", "")
+tran2$flsaonpaonstreet <- stri_replace_all_regex(
+  tran2$flsaonpaonstreet,
+  "[, ]",
+  ""
+)
 
 epc1 <- epc[stri_detect_fixed(epc$add1, "FLAT "), ]
 
@@ -5690,7 +6481,11 @@ taba140 <-
 tran <- anti_join_original_variables(tran, taba140)
 
 tran$saonpaon <- stri_paste(tran$saon, tran$paon, sep = ", ")
-tran$saonpaonstreet1 <- stri_trim_both(stri_paste(tran$saonpaon, tran$street, sep = ", "))
+tran$saonpaonstreet1 <- stri_trim_both(stri_paste(
+  tran$saonpaon,
+  tran$street,
+  sep = ", "
+))
 tran$saonpaonstreet1 <- stri_replace_all_fixed(tran$saonpaonstreet1, " ", "")
 
 epc$add264 <- char2end(epc$add2, " ")
@@ -5755,9 +6550,21 @@ tran1 <- tran[stri_detect_regex(tran$saon, "^\\d"), ]
 
 tran1$unsaon <- stri_paste("UNIT", tran1$saon, sep = " ")
 
-tran1$unsaonpaon1 <- stri_trim_both(stri_paste(tran1$unsaon, tran1$paon, sep = " "))
-tran1$unsaonpaonstreet2 <- stri_trim_both(stri_paste(tran1$unsaonpaon1, tran1$street, sep = ", "))
-tran1$unsaonpaonstreet2 <- stri_replace_all_fixed(tran1$unsaonpaonstreet2, " ", "")
+tran1$unsaonpaon1 <- stri_trim_both(stri_paste(
+  tran1$unsaon,
+  tran1$paon,
+  sep = " "
+))
+tran1$unsaonpaonstreet2 <- stri_trim_both(stri_paste(
+  tran1$unsaonpaon1,
+  tran1$street,
+  sep = ", "
+))
+tran1$unsaonpaonstreet2 <- stri_replace_all_fixed(
+  tran1$unsaonpaonstreet2,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
 
@@ -5779,8 +6586,16 @@ tran1 <- tran[tran$propertytype == "F", ]
 tran1$flsaon3 <- stri_paste("FLAT", tran1$saon, sep = " ")
 
 tran1$flsaonpaon <- stri_paste(tran1$flsaon3, tran1$paon, sep = " ")
-tran1$flsaonpaonstreet2 <- stri_paste(tran1$flsaonpaon, tran1$street, sep = ", ")
-tran1$flsaonpaonstreet2 <- stri_replace_all_fixed(tran1$flsaonpaonstreet2, " ", "")
+tran1$flsaonpaonstreet2 <- stri_paste(
+  tran1$flsaonpaon,
+  tran1$street,
+  sep = ", "
+)
+tran1$flsaonpaonstreet2 <- stri_replace_all_fixed(
+  tran1$flsaonpaonstreet2,
+  " ",
+  ""
+)
 
 epc$add1c <- stri_replace_all_fixed(epc$add1, "/", "")
 
@@ -5899,8 +6714,16 @@ tran1$paon62 <- char2end(tran1$paon, ",")
 
 tran1$saon7 <- stri_replace_all_fixed(tran1$saon, "FLAT ", "APARTMENT ")
 tran1$saon7paon6 <- stri_paste(tran1$saon7, tran1$paon62, sep = ", ")
-tran1$saon7paon6street <- stri_trim_both(stri_paste(tran1$saon7paon6, tran1$street, sep = " "))
-tran1$saon7paon6street <- stri_replace_all_fixed(tran1$saon7paon6street, " ", "")
+tran1$saon7paon6street <- stri_trim_both(stri_paste(
+  tran1$saon7paon6,
+  tran1$street,
+  sep = " "
+))
+tran1$saon7paon6street <- stri_replace_all_fixed(
+  tran1$saon7paon6street,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
 
@@ -5924,8 +6747,16 @@ tran1$paon62 <- char2end(tran1$paon, ",")
 
 tran1$saon7 <- stri_replace_all_fixed(tran1$saon, "FLAT ", "APARTMENT ")
 tran1$saon7paon6 <- stri_paste(tran1$saon7, tran1$paon62, sep = ", ")
-tran1$saon7paon6street <- stri_trim_both(stri_paste(tran1$saon7paon6, tran1$street, sep = " "))
-tran1$saon7paon6street <- stri_replace_all_fixed(tran1$saon7paon6street, " ", "")
+tran1$saon7paon6street <- stri_trim_both(stri_paste(
+  tran1$saon7paon6,
+  tran1$street,
+  sep = " "
+))
+tran1$saon7paon6street <- stri_replace_all_fixed(
+  tran1$saon7paon6street,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
 epc$addressfinal <- stri_replace_all_fixed(epc$addressfinal, " ", "")
@@ -5946,9 +6777,21 @@ tran <- anti_join_original_variables(tran, taba151)
 tran1 <- tran[stri_detect_regex(tran$saon, "LOFT\\s"), ]
 
 tran1$saon8 <- stri_replace_all_fixed(tran1$saon, "LOFT ", "FLAT ")
-tran1$saon8paon1 <- stri_trim_both(stri_paste(tran1$saon8, tran1$paon, sep = " "))
-tran1$saon8paonstreet2 <- stri_trim_both(stri_paste(tran1$saon8paon1, tran1$street, sep = ", "))
-tran1$saon8paonstreet2 <- stri_replace_all_fixed(tran1$saon8paonstreet2, " ", "")
+tran1$saon8paon1 <- stri_trim_both(stri_paste(
+  tran1$saon8,
+  tran1$paon,
+  sep = " "
+))
+tran1$saon8paonstreet2 <- stri_trim_both(stri_paste(
+  tran1$saon8paon1,
+  tran1$street,
+  sep = ", "
+))
+tran1$saon8paonstreet2 <- stri_replace_all_fixed(
+  tran1$saon8paonstreet2,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
 
@@ -5977,7 +6820,11 @@ tran1 <- tran[tran$propertytype == "F", ]
 tran1 <- tran1[!stri_detect_regex(tran1$paon, "^\\d"), ]
 
 tran1$saonpaon1 <- stri_trim_both(stri_paste(tran1$saon, tran1$paon, sep = " "))
-tran1$saonpaonstreet2 <- stri_trim_both(stri_paste(tran1$saonpaon1, tran1$street, sep = ", "))
+tran1$saonpaonstreet2 <- stri_trim_both(stri_paste(
+  tran1$saonpaon1,
+  tran1$street,
+  sep = ", "
+))
 tran1$saonpaonstreet2 <- stri_replace_all_fixed(tran1$saonpaonstreet2, " ", "")
 
 epc$fladd <- stri_paste("FLAT", epc$add, sep = " ")
@@ -6026,8 +6873,16 @@ epc[epc$postcode == "DE14 3DH", "add"] <- gsub(
 )
 tran1 <- tran[tran$propertytype == "F", ]
 
-tran1$saonpaon1 <- stri_trim_both(stri_paste(tran1$saon, tran1$paon, sep = ", "))
-tran1$saonpaonstreet1 <- stri_trim_both(stri_paste(tran1$saonpaon1, tran1$street, sep = ", "))
+tran1$saonpaon1 <- stri_trim_both(stri_paste(
+  tran1$saon,
+  tran1$paon,
+  sep = ", "
+))
+tran1$saonpaonstreet1 <- stri_trim_both(stri_paste(
+  tran1$saonpaon1,
+  tran1$street,
+  sep = ", "
+))
 tran1$saonpaonstreet1 <- stri_replace_all_fixed(tran1$saonpaonstreet1, " ", "")
 
 epc$adddap <- stri_replace_all_fixed(epc$add, "APARTMENT ", "")
@@ -6052,8 +6907,16 @@ tran1 <- tran1[!stri_detect_regex(tran1$paon, "^\\d"), ]
 
 tran1$paon61x <- beg2char(tran1$paon, ",")
 tran1$saonpaon61 <- stri_paste(tran1$saon, tran1$paon61x, sep = " ")
-tran1$saonpaon61xstreet <- stri_paste(tran1$saonpaon61, tran1$street, sep = ", ")
-tran1$saonpaon61xstreet <- stri_replace_all_regex(tran1$saonpaon61xstreet, "[, ]", "")
+tran1$saonpaon61xstreet <- stri_paste(
+  tran1$saonpaon61,
+  tran1$street,
+  sep = ", "
+)
+tran1$saonpaon61xstreet <- stri_replace_all_regex(
+  tran1$saonpaon61xstreet,
+  "[, ]",
+  ""
+)
 
 epc$fladd <- stri_paste("FLAT", epc$add, sep = " ")
 epc$addressfinal <- stri_replace_all_regex(epc$fladd, "[, ]", "")
@@ -6095,9 +6958,21 @@ tran <- anti_join_original_variables(tran, taba157)
 tran1 <- tran[tran$propertytype == "F", ]
 tran1 <- tran1[stri_detect_fixed(tran1$saon, "APARTMENT "), ]
 
-tran1$saonpaon1 <- stri_trim_both(stri_paste(tran1$saon, tran1$paon, sep = ", "))
-tran1$saonpaonstreet5 <- stri_trim_both(stri_paste(tran1$saonpaon1, tran1$street, sep = " "))
-tran1$saonpaonstreet5 <- stri_replace_all_regex(tran1$saonpaonstreet5, "[, ]", "")
+tran1$saonpaon1 <- stri_trim_both(stri_paste(
+  tran1$saon,
+  tran1$paon,
+  sep = ", "
+))
+tran1$saonpaonstreet5 <- stri_trim_both(stri_paste(
+  tran1$saonpaon1,
+  tran1$street,
+  sep = " "
+))
+tran1$saonpaonstreet5 <- stri_replace_all_regex(
+  tran1$saonpaonstreet5,
+  "[, ]",
+  ""
+)
 
 epc$add163 <- beg2char(epc$add1, " ")
 epc$apadd63 <- stri_paste("APARTMENT", epc$add163, sep = " ")
@@ -6122,9 +6997,17 @@ tran <- anti_join_original_variables(tran, taba158)
 tran1 <- tran[tran$propertytype == "F", ]
 tran1$paon11 <- stri_replace_all_fixed(tran1$paon, ",", "")
 
-tran1$saonpaon11 <- stri_trim_both(stri_paste(tran1$saon, tran1$paon11, sep = " "))
+tran1$saonpaon11 <- stri_trim_both(stri_paste(
+  tran1$saon,
+  tran1$paon11,
+  sep = " "
+))
 tran1$saonpaonstreet11 <- stri_paste(tran1$saonpaon11, tran1$street, sep = " ")
-tran1$saonpaonstreet11 <- stri_replace_all_fixed(tran1$saonpaonstreet11, " ", "")
+tran1$saonpaonstreet11 <- stri_replace_all_fixed(
+  tran1$saonpaonstreet11,
+  " ",
+  ""
+)
 
 epc[epc$postcode == "M9 7HQ", "add"] <- gsub(
   "FRESHFIELDSS",
@@ -6155,8 +7038,16 @@ tran1$paon61x <- beg2char(tran1$paon, ",")
 tran1$paon62 <- char2end(tran1$paon, ",")
 
 tran1$saonpaon61 <- stri_paste(tran1$saon, tran1$paon61x, sep = " ")
-tran1$saonpaon61xstreet <- stri_paste(tran1$saonpaon61, tran1$street, sep = ", ")
-tran1$saonpaon61xstreet <- stri_replace_all_regex(tran1$saonpaon61xstreet, "[, ]", "")
+tran1$saonpaon61xstreet <- stri_paste(
+  tran1$saonpaon61,
+  tran1$street,
+  sep = ", "
+)
+tran1$saonpaon61xstreet <- stri_replace_all_regex(
+  tran1$saonpaon61xstreet,
+  "[, ]",
+  ""
+)
 
 epc$add262 <- char2end(epc$add2, ",")
 epc$add261 <- beg2char(epc$add2, ",")
@@ -6195,8 +7086,16 @@ tran1 <- tran[tran$propertytype == "F", ]
 
 tran1$flsaon3 <- stri_paste("FLAT", tran1$saon, sep = " ")
 tran1$flsaonpaon <- stri_paste(tran1$flsaon3, tran1$paon, sep = " ")
-tran1$flsaonpaonstreet3 <- stri_paste(tran1$flsaonpaon, tran1$street, sep = ", ")
-tran1$flsaonpaonstreet3 <- stri_replace_all_regex(tran1$flsaonpaonstreet3, "[, ]", "")
+tran1$flsaonpaonstreet3 <- stri_paste(
+  tran1$flsaonpaon,
+  tran1$street,
+  sep = ", "
+)
+tran1$flsaonpaonstreet3 <- stri_replace_all_regex(
+  tran1$flsaonpaonstreet3,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "[., ]", "")
@@ -6220,8 +7119,16 @@ tran1 <- tran[tran$propertytype == "F", ]
 
 tran1$flsaon3 <- stri_paste("FLAT", tran1$saon, sep = " ")
 tran1$flsaonpaon <- stri_paste(tran1$flsaon3, tran1$paon, sep = " ")
-tran1$flsaonpaonstreet3 <- stri_paste(tran1$flsaonpaon, tran1$street, sep = ", ")
-tran1$flsaonpaonstreet3 <- stri_replace_all_regex(tran1$flsaonpaonstreet3, "[, ]", "")
+tran1$flsaonpaonstreet3 <- stri_paste(
+  tran1$flsaonpaon,
+  tran1$street,
+  sep = ", "
+)
+tran1$flsaonpaonstreet3 <- stri_replace_all_regex(
+  tran1$flsaonpaonstreet3,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./, ]", "")
@@ -6268,8 +7175,16 @@ tran1 <- tran[tran$propertytype == "F", ]
 tran1 <- tran1[stri_detect_fixed(tran1$paon, " - "), ]
 
 tran1 <- tran1[stri_detect_regex(tran1$paon, "^\\d"), ]
-tran1$saonpaon1 <- stri_trim_both(stri_paste(tran1$saon, tran1$paon, sep = ", "))
-tran1$saonpaonstreet1 <- stri_trim_both(stri_paste(tran1$saonpaon1, tran1$street, sep = ", "))
+tran1$saonpaon1 <- stri_trim_both(stri_paste(
+  tran1$saon,
+  tran1$paon,
+  sep = ", "
+))
+tran1$saonpaonstreet1 <- stri_trim_both(stri_paste(
+  tran1$saonpaon1,
+  tran1$street,
+  sep = ", "
+))
 tran1$saonpaonstreet1 <- stri_replace_all_fixed(tran1$saonpaonstreet1, " ", "")
 
 epc1 <- epc[stri_detect_fixed(epc$add, "-"), ]
@@ -6358,8 +7273,16 @@ tran1$flsaon <- stri_paste("FLAT", tran1$saon, sep = " ")
 tran1$paon61 <- beg2char(tran1$paon, ",")
 
 tran1$flsaonpaon61 <- stri_paste(tran1$flsaon, tran1$paon61, sep = " ")
-tran1$flsaonpaon61street <- stri_paste(tran1$flsaonpaon61, tran1$street, sep = ", ")
-tran1$flsaonpaon61street <- stri_replace_all_regex(tran1$flsaonpaon61street, "[, ]", "")
+tran1$flsaonpaon61street <- stri_paste(
+  tran1$flsaonpaon61,
+  tran1$street,
+  sep = ", "
+)
+tran1$flsaonpaon61street <- stri_replace_all_regex(
+  tran1$flsaonpaon61street,
+  "[, ]",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[, ]", "")
 
@@ -6382,7 +7305,11 @@ tran1 <- tran1[stri_detect_fixed(tran1$saon, "FLAT "), ]
 
 tran1$saon4 <- stri_replace_all_fixed(tran1$saon, "FLAT ", "")
 tran1$saon4paon <- stri_paste(tran1$saon4, tran1$paon, sep = " ")
-tran1$saon4paonstreet <- stri_trim_both(stri_paste(tran1$saon4paon, tran1$street, sep = " "))
+tran1$saon4paonstreet <- stri_trim_both(stri_paste(
+  tran1$saon4paon,
+  tran1$street,
+  sep = " "
+))
 tran1$saon4paonstreet <- stri_replace_all_fixed(tran1$saon4paonstreet, " ", "")
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
@@ -6410,8 +7337,16 @@ tran1$paon61 <- beg2char(tran1$paon, ",")
 
 tran1$saonpaon61 <- stri_paste(tran1$saon, tran1$paon61, sep = " ")
 
-tran1$saonpaon61street1 <- stri_trim_both(stri_paste(tran1$saonpaon61, tran1$street, sep = ", "))
-tran1$saonpaon61street1 <- stri_replace_all_fixed(tran1$saonpaon61street1, " ", "")
+tran1$saonpaon61street1 <- stri_trim_both(stri_paste(
+  tran1$saonpaon61,
+  tran1$street,
+  sep = ", "
+))
+tran1$saonpaon61street1 <- stri_replace_all_fixed(
+  tran1$saonpaon61street1,
+  " ",
+  ""
+)
 
 epc$add2641 <- char2end(epc$add2, ",")
 epc$addressfinal <- stri_paste(epc$add1, epc$add2641, sep = ", ")
@@ -6519,8 +7454,16 @@ tran <- anti_join_original_variables(tran, taba175)
 tran1 <- tran[tran$propertytype == "F", ]
 tran1$flsaon3 <- stri_paste("FLAT", tran1$saon, sep = " ")
 tran1$flsaon3paon <- stri_paste(tran1$flsaon3, tran1$paon, sep = ", ")
-tran1$flsaonpaonstreet4 <- stri_paste(tran1$flsaon3paon, tran1$street, sep = ", ")
-tran1$flsaonpaonstreet4 <- stri_replace_all_fixed(tran1$flsaonpaonstreet4, " ", "")
+tran1$flsaonpaonstreet4 <- stri_paste(
+  tran1$flsaon3paon,
+  tran1$street,
+  sep = ", "
+)
+tran1$flsaonpaonstreet4 <- stri_replace_all_fixed(
+  tran1$flsaonpaonstreet4,
+  " ",
+  ""
+)
 
 epc$add2641 <- char2end(epc$add2, ",")
 epc$addressfinal <- stri_paste(epc$add1, epc$add2641, sep = ", ")
@@ -6669,8 +7612,16 @@ tran1 <- tran1[stri_detect_fixed(tran1$paon, ","), ]
 tran1$flsaon <- stri_paste("FLAT", tran1$saon, sep = " ")
 tran1$paon61 <- beg2char(tran1$paon, ",")
 tran1$flsaonpaon61 <- stri_paste(tran1$flsaon, tran1$paon61, sep = " ")
-tran1$flsaonpaon61street <- stri_paste(tran1$flsaonpaon61, tran1$street, sep = ", ")
-tran1$flsaonpaon61street1 <- stri_replace_all_fixed(tran1$flsaonpaon61street, " ", "")
+tran1$flsaonpaon61street <- stri_paste(
+  tran1$flsaonpaon61,
+  tran1$street,
+  sep = ", "
+)
+tran1$flsaonpaon61street1 <- stri_replace_all_fixed(
+  tran1$flsaonpaon61street,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
 epc$addressfinal <- stri_replace_all_fixed(epc$addressfinal, " ", "")
@@ -6726,8 +7677,16 @@ tran1 <- tran1[stri_detect_fixed(tran1$paon, ","), ]
 tran1$saon1 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "FLAT ")
 tran1$paon62 <- char2end(tran1$paon, ",")
 tran1$saon1paon62 <- stri_paste(tran1$saon1, tran1$paon62, sep = ", ")
-tran1$saon1paon62street <- stri_trim_both(stri_paste(tran1$saon1paon62, tran1$street, sep = ", "))
-tran1$saon1paon62street <- stri_replace_all_fixed(tran1$saon1paon62street, " ", "")
+tran1$saon1paon62street <- stri_trim_both(stri_paste(
+  tran1$saon1paon62,
+  tran1$street,
+  sep = ", "
+))
+tran1$saon1paon62street <- stri_replace_all_fixed(
+  tran1$saon1paon62street,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ",") # the original code added a space ", " then immediately removed it
 epc$addressfinal <- stri_replace_all_fixed(epc$addressfinal, " ", "")
@@ -6777,8 +7736,16 @@ tran1$apsaon <- stri_paste("APARTMENT", tran1$saon, sep = " ")
 tran1$paon62 <- char2end(tran1$paon, ",")
 
 tran1$apsaonpaon62 <- stri_paste(tran1$apsaon, tran1$paon62, sep = ", ")
-tran1$apsaonpaon62street1 <- stri_paste(tran1$apsaonpaon62, tran1$street, sep = " ")
-tran1$apsaonpaon62street1 <- stri_replace_all_fixed(tran1$apsaonpaon62street1, " ", "")
+tran1$apsaonpaon62street1 <- stri_paste(
+  tran1$apsaonpaon62,
+  tran1$street,
+  sep = " "
+)
+tran1$apsaonpaon62street1 <- stri_replace_all_fixed(
+  tran1$apsaonpaon62street1,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['. ]", "")
 
@@ -6860,7 +7827,11 @@ tran[tran$postcode == "B72 1AY", "paon"] <- gsub(
 ) # this doesn't do anything!?
 
 tran$saonpaon1 <- stri_trim_both(stri_paste(tran$saon, tran$paon, sep = " "))
-tran$saonpaonstreet2 <- stri_trim_both(stri_paste(tran$saonpaon1, tran$street, sep = ", "))
+tran$saonpaonstreet2 <- stri_trim_both(stri_paste(
+  tran$saonpaon1,
+  tran$street,
+  sep = ", "
+))
 tran$saonpaonstreet2 <- stri_replace_all_fixed(tran$saonpaonstreet2, " ", "")
 
 epc$addressfinal <- stri_replace_all_fixed(epc$add, " ", "")
@@ -6935,8 +7906,16 @@ tran1 <- tran1[stri_detect_regex(tran1$saon, "^\\d"), ]
 tran1$apsaon <- stri_paste("APARTMENT ", tran1$saon, sep = "")
 
 tran1$apsaonpaon <- stri_paste(tran1$apsaon, tran1$paon, sep = " ")
-tran1$apsaonpaonstreet2 <- stri_paste(tran1$apsaonpaon, tran1$street, sep = ", ")
-tran1$apsaonpaonstreet2 <- stri_replace_all_fixed(tran1$apsaonpaonstreet2, " ", "")
+tran1$apsaonpaonstreet2 <- stri_paste(
+  tran1$apsaonpaon,
+  tran1$street,
+  sep = ", "
+)
+tran1$apsaonpaonstreet2 <- stri_replace_all_fixed(
+  tran1$apsaonpaonstreet2,
+  " ",
+  ""
+)
 
 epc1 <- epc[stri_detect_fixed(epc$add2, ","), ]
 
@@ -6990,10 +7969,14 @@ tran <- anti_join_original_variables(tran, taba190)
 
 tran1 <- tran[stri_detect_fixed(tran$paon, ","), ]
 
-tran1$paon5 <- word(tran1$paon, -1)
+tran1$paon5 <- stri_extract_last_regex(tran1$paon, "\\S+")
 tran1$saonpaon5 <- stri_paste(tran1$saon, tran1$paon5, sep = ", ")
 tran1$saonpaon5street1 <- stri_paste(tran1$saonpaon5, tran1$street, sep = " ")
-tran1$saonpaon5street1 <- stri_replace_all_fixed(tran1$saonpaon5street1, " ", "")
+tran1$saonpaon5street1 <- stri_replace_all_fixed(
+  tran1$saonpaon5street1,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_paste(epc$add1, epc$add2, sep = ", ")
 epc$addressfinal <- stri_replace_all_regex(epc$addressfinal, "['./ ]", "")
@@ -7017,9 +8000,21 @@ tran1$saon2 <- stri_replace_all_fixed(tran1$saon, "APARTMENT ", "")
 tran1$saonn2 <- stri_replace_all_fixed(tran1$saon2, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
-tran1$saon2paonn1 <- stri_trim_both(stri_paste(tran1$saonn2, tran1$paonn, sep = " "))
-tran1$saon2paonstreetn3 <- stri_trim_both(stri_paste(tran1$saon2paonn1, tran1$streetn, sep = " "))
-tran1$saon2paonstreetn3 <- stri_replace_all_fixed(tran1$saon2paonstreetn3, " ", "")
+tran1$saon2paonn1 <- stri_trim_both(stri_paste(
+  tran1$saonn2,
+  tran1$paonn,
+  sep = " "
+))
+tran1$saon2paonstreetn3 <- stri_trim_both(stri_paste(
+  tran1$saon2paonn1,
+  tran1$streetn,
+  sep = " "
+))
+tran1$saon2paonstreetn3 <- stri_replace_all_fixed(
+  tran1$saon2paonstreetn3,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "['./ ]", "")
 
@@ -7064,7 +8059,11 @@ tran$saonn1 <- stri_replace_all_fixed(tran$saon1, "/", "")
 tran$paonn <- stri_replace_all_regex(tran$paon, "['.]", "")
 tran$streetn <- stri_replace_all_fixed(tran$street, "'", "")
 tran$saon1paonn <- stri_paste(tran$saonn1, tran$paonn, sep = ", ")
-tran$saon1paonstreetn1 <- stri_trim_both(stri_paste(tran$saon1paonn, tran$streetn, sep = ", "))
+tran$saon1paonstreetn1 <- stri_trim_both(stri_paste(
+  tran$saon1paonn,
+  tran$streetn,
+  sep = ", "
+))
 tran$saon1paonstreetn1 <- stri_replace_all_fixed(
   tran$saon1paonstreetn1,
   " ",
@@ -7095,8 +8094,16 @@ tran1$saonn4 <- stri_replace_all_fixed(tran1$saon4, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 tran1$saon4paonn1 <- stri_paste(tran1$saonn4, tran1$paonn, sep = " ")
-tran1$saon4paonstreetn1 <- stri_trim_both(stri_paste(tran1$saon4paonn1, tran1$streetn, sep = ", "))
-tran1$saon4paonstreetn1 <- stri_replace_all_fixed(tran1$saon4paonstreetn1, " ", "")
+tran1$saon4paonstreetn1 <- stri_trim_both(stri_paste(
+  tran1$saon4paonn1,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon4paonstreetn1 <- stri_replace_all_fixed(
+  tran1$saon4paonstreetn1,
+  " ",
+  ""
+)
 
 epc1 <- epc[!stri_detect_regex(epc$add, "\\d+-\\d+"), ]
 epc1$add <- stri_trim_both(epc1$add)
@@ -7127,8 +8134,16 @@ tran1$saonn1 <- stri_replace_all_fixed(tran1$saon1, "/", "")
 tran1$paonn <- stri_replace_all_regex(tran1$paon, "['.]", "")
 tran1$streetn <- stri_replace_all_fixed(tran1$street, "'", "")
 tran1$saon1paonn <- stri_paste(tran1$saonn1, tran1$paonn, sep = " ")
-tran1$saon1paonstreetn <- stri_trim_both(stri_paste(tran1$saon1paonn, tran1$streetn, sep = ", "))
-tran1$saon1paonstreetn <- stri_replace_all_fixed(tran1$saon1paonstreetn, " ", "")
+tran1$saon1paonstreetn <- stri_trim_both(stri_paste(
+  tran1$saon1paonn,
+  tran1$streetn,
+  sep = ", "
+))
+tran1$saon1paonstreetn <- stri_replace_all_fixed(
+  tran1$saon1paonstreetn,
+  " ",
+  ""
+)
 
 epc$addressfinal <- stri_replace_all_regex(epc$add, "[-./ ]", "")
 
@@ -7173,22 +8188,27 @@ tran <- anti_join_original_variables(tran, taba197)
 taba_list <- mget(ls(pattern = "^taba"))
 
 #casa5 is the linked result through stage4
-casa5 <- reduce(taba_list, union)
+casa5 <- bind_rows(taba_list) |> distinct()
 
 # Tidy up
-rm(list = setdiff(ls(), c("con", "casa1", "casa2", "casa3", "casa4", "casa5", "tran")))
+rm(
+  list = setdiff(
+    ls(),
+    c("con", "casa1", "casa2", "casa3", "casa4", "casa5", "tran")
+  )
+)
 
 # Save casa5 in duckDB as casabin5
-dbWriteTable(con, "casabin5", casa5, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "casabin5", casa5, overwrite = TRUE, row.names = FALSE)
 
 # Save the unmatched tran
-dbWriteTable(con, "tran3binleft", tran, overwrite = TRUE, row.names = FALSE)
+# dbWriteTable(con, "tran3binleft", tran, overwrite = TRUE, row.names = FALSE)
 
 rm(tran)
 
 # ------------------combine the results from four stages------------------------------
 
-casa <- reduce(list(casa1, casa2, casa3, casa4, casa5), union)
+casa <- bind_rows(casa1, casa2, casa3, casa4, casa5) |> distinct()
 
 # casa is the final linked result
 dbWriteTable(con, "casa", casa, overwrite = TRUE, row.names = FALSE)
