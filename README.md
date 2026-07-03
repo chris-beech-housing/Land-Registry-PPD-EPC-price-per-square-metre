@@ -1,7 +1,9 @@
 # Land-Registry-PPD-EPC-price-per-square-metre
 This is a refactor of [Bin Chi's excellent work](https://github.com/Bin-Chi/Link-LR-PPD-and-Domestic-EPCs) linking [England and Wales Land Registry Price Paid Data](https://www.gov.uk/guidance/about-the-price-paid-data) to [EPC data](https://epc.opendatacommunities.org/) to obtain a price per square metre dataset.
 
-Overall execution time for the equivalent of scripts 3 and 4 has improved from over 18 hours to just under 65 minutes, or 18x, on an M1 MacBook Pro with 32GB of memory. I hope by speeding up this code more people can and will use Bin's approach; the rules have an excellent match rate - see the Matches by year csv file.
+This work was a manual refactoring with many helper scripts. It should now be possible to have an LLM attempt the same but as of summer 2025 it was not.
+
+Overall execution time for the equivalent of scripts 3 and 4 has improved from over 18 hours to just under 65 minutes, or 18x, on an M1 MacBook Pro with 32GB of memory. I hope by speeding up this code more people can and will use Bin's approach; the rules have an excellent match rate - see my [working paper](https://github.com/chris-beech-housing/Travelling-Wave-Dynamics-in-Housing-Markets/blob/main/Travelling%20Wave%20Dynamics%20in%20Housing%20Markets.pdf).
 
 An overview of the scripts:
 
@@ -55,6 +57,9 @@ An overview of the scripts:
 
 		iv) Tidying up of the variable names; keeping the existing variable names allows
 		for troubleshooting with comparison to the original code
+
+		v) Pre-computing the variable names, rather than calculating each time; this would
+		use too much memory.
 
 4. Create final PPD. This script: uses data.table indexing to split the matches into 1:1 or 1:N transaction to EPC groups, has a new function to determine which of the N to choose, then recombines and filters for data quality. Alternate rules and filters can easily be substituted. This is equivalent to the Data_cleaning.R script in Bin's work.
 
