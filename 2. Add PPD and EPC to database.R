@@ -56,8 +56,10 @@ ppd <-
   ) |>
   select(-`Transaction unique identifier`) |> # there are duplicate rows with identical columns except for the second part of this id
   distinct() |> # remove the duplicates
-  filter(`Property Type` != "O") |>
+  filter(`Property Type` != "O") |> # remove 'Other' type
+  filter(`PPD Category Type` != "B") |> # remove Additional Price Paid transactions
   arrange(Postcode) |>
+  filter(`Date of Transfer` < "2026-04-01") |>
   mutate(transactionid = row_number(), yearchi = year(`Date of Transfer`)) |>
   mutate(across(where(is.character), ~ replace_na(.x, ""))) |>
   rename(
@@ -90,7 +92,10 @@ epc <-
     add = stri_trim_both(add)
   ) |>
   distinct() |>
-  mutate(across(where(is.character), ~ stri_replace_all_regex(.x, "[\\[\\]\\(\\)\\{\\}]", " "))) |> # replace brackets by space; e.g. for a handful of Flat 1(2 xyz) type addresses
+  mutate(across(
+    where(is.character),
+    ~ stri_replace_all_regex(.x, "[\\[\\]\\(\\)\\{\\}]", " ")
+  )) |> # replace brackets by space; e.g. for a handful of Flat 1(2 xyz) type addresses
   arrange(postcode)
 
 # Keep only epc and ppd records with postcodes in common
