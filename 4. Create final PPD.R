@@ -21,6 +21,11 @@ casa <- dbGetQuery(con, "select * from casa")
 dbDisconnect(con)
 rm(con)
 
+# Save transaction counts for match % later
+tran_counts <- as.data.table(tran)[, .(total = .N),
+                                   by = .(year = year(as.Date(dateoftransfer)), 
+                                          propertytype = propertytype)]
+
 # Join data and set keys & indices
 tran_casa_epc <-
   tran |>
@@ -63,11 +68,15 @@ multi_idx <- tran_casa_epc[, .I[.N > 1], by = transactionid]$transactionid
 # Tie-breaking logic
 resolve_ties <- function(dt) {
   idx <- which(dt$abs_inspection_diff == min(dt$abs_inspection_diff))
-  if (length(idx) == 1) return(idx)
+  if (length(idx) == 1) {
+    return(idx)
+  }
 
   dt <- dt[idx]
   idx2 <- which(dt$abs_lodgement_diff == min(dt$abs_lodgement_diff))
-  if (length(idx2) == 1) return(idx[idx2])
+  if (length(idx2) == 1) {
+    return(idx[idx2])
+  }
 
   dt <- dt[idx2]
   if (all(!is.na(dt$numberrooms))) {
@@ -106,6 +115,34 @@ final_idx <- c(unique_idx, before_idx, after_idx)
 # Final result
 ppd <- tran_casa_epc[final_idx]
 
+# Match % by year and property type
+ppd_counts <- ppd[, .(matched = .N),
+                  by = .(year = year(dateoftransfer), 
+                         propertytype = propertytype.x)]
+
+match_pct <- merge(tran_counts, ppd_counts, by = c("year", "propertytype"), all.x = TRUE)
+match_pct[is.na(matched), matched := 0]
+match_pct[, pct := matched / total * 100]
+
+# Add overall match %
+overall <- match_pct[, .(matched = sum(matched), total = sum(total)), by = year]
+overall[, `:=`(propertytype = "Overall", pct = matched / total * 100)]
+match_pct <- rbind(match_pct, overall, fill = TRUE)
+
+match_pct |> 
+  ggplot(aes(x = year, y = pct, colour = propertytype, 
+             linewidth = propertytype == "Overall")) +
+  geom_line() +
+  geom_point(size = 1.5) +
+  scale_linewidth_manual(values = c("TRUE" = 1.4, "FALSE" = 0.6), guide = "none") +
+  labs(
+    x = "", y = "", colour = "Property Type",
+    title = ""
+  ) +
+  scale_y_continuous(limits = c(0, 100)) +
+  theme_minimal() + 
+  theme(legend.position = "bottom")
+
 # Clean up
 rm(list = setdiff(ls(), c("ppd")))
 
@@ -139,6 +176,7 @@ setnames(ppd, "postcode.x", "Postcode")
 setnames(ppd, "county", "County")
 setnames(ppd, "district", "District")
 setnames(ppd, "price", "Price")
+setnames(ppd, "propertytype.x", "Property Type")
 setnames(ppd, "categorytype", "PPD Category Type")
 
 # Select only the required fields
@@ -153,6 +191,7 @@ ppd <-
       Price,
       tfarea,
       priceper,
+      `Property Type`,
       `PPD Category Type`
     )
   ]
