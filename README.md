@@ -1,5 +1,5 @@
 # Land-Registry-PPD-EPC-price-per-square-metre
-This is a refactor of [Bin Chi's excellent work](https://github.com/Bin-Chi/Link-LR-PPD-and-Domestic-EPCs) linking [England and Wales Land Registry Price Paid Data](https://www.gov.uk/guidance/about-the-price-paid-data) to [EPC data](https://epc.opendatacommunities.org/) to obtain a price per square metre dataset.
+This is a refactor of [Bin Chi's excellent work](https://github.com/Bin-Chi/Link-LR-PPD-and-Domestic-EPCs) linking [England and Wales Land Registry Price Paid Data](https://www.gov.uk/guidance/about-the-price-paid-data) to [EPC data](https://get-energy-performance-data.communities.gov.uk/) to obtain a price per square metre dataset.
 
 This work was a manual refactoring with many helper scripts. It should now be possible to have an LLM attempt the same but as of summer 2025 it was not.
 
@@ -7,7 +7,7 @@ Overall execution time for the equivalent of scripts 3 and 4 has improved from o
 
 An overview of the scripts:
 
-1. Combine EPC certificates. This script selects only the required fields from the individual EPC files before combining into a single file. This doesn't have an equivalent in Bin's work. This is for the [new EPC site](https://get-energy-performance-data.communities.gov.uk/) which only has EPC certificates from 2012 onwards. I need to create a new workflow that combines Bin's data from before 2012 with this data.
+1. Combine EPC certificates. This script selects only the required fields from the individual EPC files before combining into a single file. This doesn't have an equivalent in Bin's work.
 
 2. Add PPD and EPC to database. This script adds the PPD and EPC datasets to the duckDB database, only taking records with postcodes in common to both. This is equivalent to the Data_cleaning.sql and Read_LR_PPD.sql scripts in Bin's work but adds a few more lines to tidy up the data upfront. Note that I have kept the additional price paid category of transactions.
 
