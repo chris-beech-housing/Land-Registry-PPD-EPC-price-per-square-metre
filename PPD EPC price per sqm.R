@@ -4956,7 +4956,10 @@ dbGetQuery(
   ggpairs()
 
 # Data quality filters, tidy names, select only the required fields and write csv. known() is R's
-# !is.na(), which is FALSE for NaN; DuckDB would otherwise count NaN as larger than any number
+# !is.na(), which is FALSE for NaN; DuckDB would otherwise count NaN as larger than any number.
+# Transactions without a price per square metre are dropped, as in Bin Chi's Data_cleaning.R: a
+# transaction matched to a single EPC keeps it whatever its floor area, and some EPCs have none (the
+# certificates lodged from September 2008 to May 2009)
 run_sql("CREATE TEMP MACRO known(x) AS (x IS NOT NULL AND NOT isnan(x))")
 
 run_sql(sprintf(
@@ -4973,7 +4976,7 @@ run_sql(sprintf(
       propertytype AS \"Property Type\",
       categorytype AS \"PPD Category Type\"
     FROM ppd_fields
-    WHERE NOT (
+    WHERE known(priceper) AND NOT (
       (known(numberrooms) AND numberrooms > 20) OR
       (known(tfarea) AND tfarea < 10) OR
       (known(tfarea) AND tfarea > 1000) OR
