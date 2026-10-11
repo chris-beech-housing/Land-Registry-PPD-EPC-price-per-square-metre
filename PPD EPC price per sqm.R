@@ -38,7 +38,6 @@ epc_dir <- "Data/domestic-csv"
 
 ## England and Wales price paid data: https://www.gov.uk/guidance/about-the-price-paid-data
 ppd_path <- "Data/pp-complete.csv"
-last_date <- "2026-09-01" # transfers before this date: pp-complete.csv runs to August 2026
 
 ## Bin Chi's corrections for addresses written differently in the EPCs and the Land Registry PPD
 rulechi_path <- "Data/rulechi.csv"
@@ -589,7 +588,7 @@ enums <- sapply(c("propertytype", "oldnew", "duration", "categorytype", "records
 
 # distinct() (the transaction identifier is dropped first: there are duplicate rows with identical
 # columns except for the second part of this id), remove 'Other' property types and Additional Price
-# Paid transactions, arrange by postcode, transfers before last_date, then transactionid in that order
+# Paid transactions, arrange by postcode, then transactionid in that order
 run_sql(sprintf(
   "
   CREATE OR REPLACE TEMP TABLE ppd_tidy AS
@@ -604,10 +603,10 @@ run_sql(sprintf(
     CAST(categorytype AS %s) AS categorytype, CAST(recordstatus AS %s) AS recordstatus,
     CAST(year(dateoftransfer) AS DOUBLE) AS yearchi
   FROM (SELECT *, min(rowid) AS position FROM ppd_raw GROUP BY ALL) -- distinct(), keeping the first
-  WHERE propertytype <> 'O' AND categorytype <> 'B' AND dateoftransfer < TIMESTAMP '%s'
+  WHERE propertytype <> 'O' AND categorytype <> 'B'
   ",
   enums[["propertytype"]], enums[["oldnew"]], enums[["duration"]], enums[["categorytype"]],
-  enums[["recordstatus"]], last_date
+  enums[["recordstatus"]]
 ))
 run_sql("DROP TABLE ppd_raw")
 
